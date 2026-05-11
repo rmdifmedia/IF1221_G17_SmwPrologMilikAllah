@@ -7,19 +7,22 @@
 /* Pemain */
 
 /* Input jumlah pemain dengan batasan */
-startGame:- repeat,
-            write('Masukkan jumlah pemain: '),
+startGame:- write('Masukkan jumlah pemain: '),
             read(Number),
             hitungPemain(Number),
-            (Number >= 2,
-            Number =< 4),
             nl,
+            !,
             pemainCounter(Number,0).
 
 hitungPemain(Number):-  (Number < 2;
                         Number > 4),
                         write('Mohon masukkan angka antara 2-4.'),
-                        nl.
+                        nl,
+                        startGame.
+
+hitungPemain(Number):-  Number >= 2,
+                        Number =< 4,
+                        !.
 
 /* Menghitung jumlah pemain untuk input data */
 pemainCounter(Number, N):-  N < Number,
@@ -28,7 +31,10 @@ pemainCounter(Number, N):-  N < Number,
                             namaPemain(N1),
                             pemainCounter(Number, N1).
 
-pemainCounter(Number, Number):- !.
+pemainCounter(Number, Number):- !,
+                                write('Urutan pemain: '),
+                                cekSemuaNama(List),
+                                randomUrutan(Number, 1, List).
 
 /* Input data pemain yang valid */
 inputDataPemain(Nama):- open('dataNama.txt', append, N),
@@ -81,4 +87,30 @@ namaPemain(N):- write('Masukkan nama pemain '),
                 read(Nama),
                 (cekFormatNama(Nama) -> true;
                 namaPemain(N)).
+
+/* Pilih random dari list */
+randomMember(Member, List):-    length(List, Len),
+                                random(0, Len, Index),
+                                nth0(Index, List, Member).
+
+/* Urutan Random Pemain */
+
+randomUrutan(Number, N, List):- N < Number,
+                                !,
+                                randomMember(Member, List),
+                                write(Member),
+                                write(' - '),
+                                delete(List, Member, NewList),
+                                N1 is N + 1,
+                                randomUrutan(Number, N1, NewList).
+
+randomUrutan(Number, Number, List):-    randomMember(Member, List),
+                                        write(Member),
+                                        write('.'),
+                                        nl,
+                                        !.
+
+
+                            
+                            
 
