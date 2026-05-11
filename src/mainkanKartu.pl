@@ -1,34 +1,9 @@
 /* include rules kartu */
+(startGame.pl)
 :- dynamic(discardtop/2). /* cek kartu teratas */
-:- dynamic(kartuPemain/1).
-
-/*deskripsi fakta*/
-warna(merah).
-warna(kuning).
-warna(hijau).
-warna(biru).
-warna(hitam).
-jenis(0).
-jenis(1).
-jenis(2).
-jenis(3).
-jenis(4).
-jenis(5).
-jenis(6).
-jenis(7).
-jenis(8).
-jenis(9).
-jenis(skip). 
-jenis(reversecard).
-jenis(wild).
-jenis(wild4).
-jenis(plus2).
-kartu(warna, jenis).
-
-/* alur mainkan kartu
-    cek validasi kartu (apakah warna sama? atau angka sama? atau wild?)
-    If !valid, input lagi.
-    if valid, kartunya jadi kartu discardtop dan kalo ngeluarin wild dia bisa tantang dsb gitu yek*/
+:- dynamic(kartu_ditangan/1).
+:- dynamic(giliran/1). /* mengambil giliran pemain*/
+:- dynamic(game_started/0).
 
 /* helper */
 /* cek apakah kartu valid or not */
@@ -55,23 +30,31 @@ getKartu([_|Tail], Index, Kartu):-
     Newindex is Index - 1,
     getKartu(Tail, Newindex, Kartu).
 
-/*contoh kartu pemain*/
-kartuPemain([kartu(biru, 4), kartu(hijau, skip), kartu(hitam, wild)])
-
 mainkanKartu(Urut):-
+    (
+        game_started.
+    ->  giliran(Pemain).
 
     getKartu(kartuPemain, Urut, Kartu).
-    (isKartuValid(Kartu) ?*kalo iya valid*/
+    (isKartuValid(Kartu) /*kalau valid*/
     ->  hapus_kartu(Kartu, kartuPemain, updatedKartuPemain).
         retract(kartuPemain);
         assertz(updatedKartuPemain);
 
         /* terapkan rules/efekk kartu yang di taro*/
-        /* ini manggil rules dari file sisi or nadia yac?*/
 
-    ; /* kalo engga valid*/
-    write("Duhh... Kartunya gak sesuai nich! Tolong pilih kartu lain yak :-D").
-    nl.
+    ; /* kalau tidak valid*/
+    write("Duhh... Kartunya gak sesuai nich!"). nl.
+    write("Kamu bisa menginput ulang kartu atau ketik 'Cancel' jika tidak ingin memainkan kartu :D"). nl.
+    read(Ans).
+    (
+        Ans == 'Cancel'
+        -> write("Kamu memilih tidak memainkan kartu. Silahkan ambil kartu."). nl.
+        ;
+        mainkanKartu(Ans).
+    )
+        ; fail.
+    )
     )
 
 
