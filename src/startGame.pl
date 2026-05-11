@@ -1,7 +1,5 @@
 /*startGame.pl*/
 
-/* Deklarasi Fakta */
-
 /* Deklarasi Rules */
 
 /* Pemain */
