@@ -88,6 +88,13 @@ namaPemain(N):- write('Masukkan nama pemain '),
                 (cekFormatNama(Nama) -> true;
                 namaPemain(N)).
 
+/* Simpan data pemain */
+inputUrutan(Member):-   open('dataUrutan.txt', append, Urutan),
+                        writeq(Urutan, Member),
+                        write(Urutan, '.'),
+                        nl(Urutan),
+                        close(Urutan).
+
 /* Pilih random dari list */
 randomMember(Member, List):-    length(List, Len),
                                 random(0, Len, Index),
@@ -98,6 +105,7 @@ randomMember(Member, List):-    length(List, Len),
 randomUrutan(Number, N, List):- N < Number,
                                 !,
                                 randomMember(Member, List),
+                                inputUrutan(Member),
                                 write(Member),
                                 write(' - '),
                                 delete(List, Member, NewList),
@@ -105,6 +113,7 @@ randomUrutan(Number, N, List):- N < Number,
                                 randomUrutan(Number, N1, NewList).
 
 randomUrutan(Number, Number, List):-    randomMember(Member, List),
+                                        inputUrutan(Member),
                                         write(Member),
                                         write('.'),
                                         nl,
