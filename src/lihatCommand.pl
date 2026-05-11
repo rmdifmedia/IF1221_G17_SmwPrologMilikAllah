@@ -1,5 +1,5 @@
-:- include('mainKartu.pl').
-:- include('startGame.pl').
+/* :- include('mainKartu.pl'). */
+/* :- include('startGame.pl'). */
 
 /*
 AKSI UTAMA : tampilan dari lihatCommand
