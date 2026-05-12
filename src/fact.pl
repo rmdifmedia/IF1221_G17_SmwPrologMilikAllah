@@ -4,6 +4,7 @@
 :- dynamic(kartu_diTangan/2).
 :- dynamic(turn/1).
 :- dynamic(currColor/1).
+:- dynamic(deck/1).
 
 setWarna(W):-
     retractall(currColor(_)),
@@ -27,8 +28,9 @@ kartu(hitam, wild).
 kartu(hitam, drawfour).
 
 /* Deck Kartu Uni */
-createDeck(FullDeck):-
-    findall(kartu(W,J), kartu(W, J), FullDeck).
+initdeck :-
+    findall(kartu(W,J), kartu(W,J), FullDeck),
+    assertz(deck(FullDeck)).
 
 /* Predikat */
 efekKartu(_, skip):-
@@ -73,7 +75,7 @@ randomCard(ListKartu, ChosenKartu):-
     getCard(ListKartu, Idx, ChosenKartu).
 
 ambilKartu :-
-    createDeck(FullDeck),
+    deck(FullDeck),
     randomCard(FullDeck, ChosenCard),
     turn(Nama),
     retract(kartu_diTangan(Nama, ListLama)),

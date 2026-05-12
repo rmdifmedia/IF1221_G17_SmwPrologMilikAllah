@@ -86,7 +86,6 @@ lihatKartu :-
 
 :- dynamic(kartuTop/2). /* ambil kartu teratas */
 :- dynamic(kartu_diTangan/2).
-:- dynamic(giliran/1). /* mengambil giliran pemain*/
 
 info_pemain(_,[]).
 info_pemain(FullList, [Nama|Tail]) :-
