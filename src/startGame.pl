@@ -5,6 +5,8 @@
 /* Pemain */
 
 /* Input jumlah pemain dengan batasan */
+
+
 startGame:- write('Masukkan jumlah pemain: '),
             read(Number),
             hitungPemain(Number),
@@ -123,7 +125,4 @@ randomUrutan(Number, Number, List, ListUrutan):-    randomMember(Member, List),
 /* Pembagian Kartu */
 
 
-
-                            
-                            
 
