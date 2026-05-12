@@ -97,13 +97,12 @@ removeCard(_, [], []).
 removeCard(cardX, [cardX|T], T).
 removeCard(X, [H|T], [H|Terhapus]):-
     X\==H,
-    removeCard(X,T,Terhapus).
+    removeCard(X,T,Terhapus).  
 
 setDiscardTop(ChosenCard):-
     read(ChosenCard),
     ChosenCard(W,J),
     setWarna(W).
-    
 
 mainkanKartu(Number):-
     turn(Nama),
@@ -130,7 +129,18 @@ mainkanKartu(Number):-
 
     ).
 
+    /*listUni :-
+        findall(Nama, pemain(Nama), ListUNI).
 
+    tambahOrangUni(Nama) :-
+        assertz(pemain(Nama)).
 
-
-
+    uni(Number) :-
+        turn(Pemain),
+        kartu_diTangan(Pemain, ListKartu),
+        member(Kartu, ListKartu), 
+        isKartuValid(Kartu),
+        length(ListKartu, Length),
+        Length =:= 2,
+        mainkanKartu(Number),
+        append(ListUNI, Pemain)*/
