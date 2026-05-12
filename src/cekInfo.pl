@@ -17,5 +17,5 @@ cekInfo :-
 kartuTop(Warna, jenis).
 write('Kartu discard-top: ~w~n', [Warna, Jenis]).
 write('Urutan pemain: ~w~n', [Urutan_pemain]).
-info_pemain(Urutan_pemain)
+info_pemain(Urutan_pemain).
 

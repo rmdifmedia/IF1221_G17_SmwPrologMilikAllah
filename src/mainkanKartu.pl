@@ -53,7 +53,8 @@ mainkanKartu(Urut):-
     read(Ans).
     (
         Ans == 'Cancel'
-        -> write("Kamu memilih tidak memainkan kartu. Silahkan ambil kartu."). nl.
+        -> write("Kamu memilih tidak memainkan kartu. Silahkan ambil kartu."). nl. 
+        ambilKartu.
         ;
         mainkanKartu(Ans).
     )
