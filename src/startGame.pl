@@ -32,7 +32,7 @@ pemainCounter(Number, N):-  N < Number,
 pemainCounter(Number, Number):- !,
                                 write('Urutan pemain: '),
                                 cekSemuaNama(List),
-                                randomUrutan(Number, 1, List).
+                                randomUrutan(Number, 1, List, []).
 
 /* Input data pemain yang valid */
 inputDataPemain(Nama):- open('dataNama.txt', append, N),
@@ -100,22 +100,28 @@ randomMember(Member, List):-    length(List, Len),
 
 /* Urutan Random Pemain */
 
-randomUrutan(Number, N, List):- N < Number,
-                                !,
-                                randomMember(Member, List),
-                                inputUrutan(Member),
-                                write(Member),
-                                write(' - '),
-                                delete(List, Member, NewList),
-                                N1 is N + 1,
-                                randomUrutan(Number, N1, NewList).
+randomUrutan(Number, N, List, ListUrutan):- N < Number,
+                                            !,
+                                            randomMember(Member, List),
+                                            append(ListUrutan, [Member], ResList),
+                                            inputUrutan(Member),
+                                            write(Member),
+                                            write(' - '),
+                                            delete(List, Member, NewList),
+                                            N1 is N + 1,
+                                            randomUrutan(Number, N1, NewList, ResList).
 
-randomUrutan(Number, Number, List):-    randomMember(Member, List),
-                                        inputUrutan(Member),
-                                        write(Member),
-                                        write('.'),
-                                        nl,
-                                        !.
+randomUrutan(Number, Number, List, ListUrutan):-    randomMember(Member, List),
+                                                    append(ListUrutan, [Member], ResList),
+                                                    inputUrutan(Member),
+                                                    write(Member),
+                                                    write('.'),
+                                                    nl,
+                                                    nl,
+                                                    !.
+
+/* Pembagian Kartu */
+
 
 
                             
