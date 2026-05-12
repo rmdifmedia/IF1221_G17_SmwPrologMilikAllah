@@ -4,7 +4,7 @@
 :- initialization(main).
 
 main :-
-    write('>> New Game ~n >> Load Game ~n Ketik Opsi: '),
+    format('>> New Game ~n >> Load Game ~n Ketik Opsi: '),
     read(Opsi),
     (Opsi = 'New Game'
     -> startGame

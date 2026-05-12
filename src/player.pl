@@ -2,9 +2,9 @@
  cekinfo, lihat command, lihatkartu, nexturn, reversturn, giliran*/
 
 :- include('src/fact.pl').
-
-:- dynamic turn/1.
-:- dynamic jumlah/1.
+:- dynamic(turn/1).
+:- dynamic(jumlah/1).
+:- dynamic(arah/1).
 
 nextTurn :- 
     turn(Nama),
@@ -17,8 +17,13 @@ nextTurn :-
     assert(turn(Next)).
 
 reverseUrutan :-
-    arah(mundur),
-    nextTurn.
+    (
+        arah(maju)
+        -> retract(arah(maju)),
+            assert(arah(mundur))
+        ; retract(arah(mundur)),
+        assert(arah(maju)) 
+    ).
 
 aksiUtama(Pemain, AksUtamaList) :-
     turn(Pemain),
@@ -28,7 +33,7 @@ aksiUtama(Pemain, AksUtamaList) :-
 aksi_utama_tersedia(_, ambilKartu).
 
 aksi_utama_tersedia(Pemain, tantang) :-
-    kartuTop(_, drawfour).
+    kartuTop(_, drawfour),
     turn(Pemain).
 
 aksi_utama_tersedia(Pemain, uni) :-
@@ -55,37 +60,30 @@ printNomor(N, [H|T]) :-
     printNomor(N1, T).
 
 lihatCommand :- 
-    (   game_started
-    ->  turn(Pemain),
+     turn(Pemain),
         findall(A, aksi_utama_tersedia(Pemain, A), AksiUtama),
         write('Aksi utama yang tersedia:'), nl,
         printNomor(1, AksiUtama),
         nl,
-        write('Aksi pendukung yang tersedia:', nl,
-        printNomor(1, [lihatCommand, lihatKartu, cekInfo]) 
-    )
-    ;   write('Gamenya belum dimulai!'), nl,
-        fail
-    ).
+        write('Aksi pendukung yang tersedia:'), nl,
+        printNomor(1, [lihatCommand, lihatKartu, cekInfo]).
+
 
 printKartu(_, []).
-printKartu(N, [kartu(Warna, Jenis)] | [T] ) :-
+printKartu(N, [kartu(Warna, Jenis) | T] ) :-
     format('~w. ~w-~w~n', [N, Warna, Jenis]),
     N1 is N + 1,
     printKartu(N1, T).
 
 lihatKartu :-
-    (   game_started
-    ->  giliran(Pemain), 
+  giliran(Pemain), 
         write('Berikut kartu yang anda miliki.'), nl,
         (   kartu_diTangan(Pemain, ListKartu)
         ->  printKartu(1, ListKartu)
         ; write('Kamu! tidak memiliki kartu!'), nl,
-    ;write('Gamenya belum dimulai!'), nl,
-        fail).
-    )
+        ).
 
-:- dynamic(game_started/0).
+
 :- dynamic(kartuTop/2). /* ambil kartu teratas */
 :- dynamic(kartu_diTangan/2).
 :- dynamic(giliran/1). /* mengambil giliran pemain*/
@@ -111,6 +109,6 @@ listPemain(ListPemain) :-
 
 cekInfo :-
     kartuTop(Warna, jenis),
-    format('Kartu discard top: ~w - ~w~n', [Warna, jenis]),
+    format('Kartu discard top: ~w - ~w~n', [Warna, Jenis]),
     listPemain(ListPemain),
     info_pemain(ListPemain, ListPemain).
