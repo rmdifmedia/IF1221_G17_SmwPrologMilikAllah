@@ -1,11 +1,5 @@
 :- include('mainKartu.pl').
-/* :- include kartuTop dan giliran */
-
-:- dynamic(giliran/1).
-:- dynamic(kartu_diTangan/2).
-:- dynamic(kartu/2).
-:- dynamic(kartuTop/2).
-:- dynamic(game_started/0).
+:- include('startGame.pl').
 
 /*
 AKSI UTAMA : tampilan dari lihatCommand
