@@ -1,7 +1,7 @@
 /* action yang berhubungan dengan player 
  cekinfo, lihat command, lihatkartu, nexturn, reversturn, giliran*/
 
-:- include('src/fact.pl').
+:- include('fact.pl').
 :- dynamic(turn/1).
 :- dynamic(jumlah/1).
 :- dynamic(arah/1).

@@ -1,11 +1,6 @@
-/*startGame.pl*/
-
-/* Deklarasi Rules */
-
-/* Pemain */
+:- include('fact.pl').
 
 /* Input jumlah pemain dengan batasan */
-
 
 startGame:- write('Masukkan jumlah pemain: '),
             read(Number),
@@ -120,9 +115,44 @@ randomUrutan(Number, Number, List, ListUrutan):-    randomMember(Member, List),
                                                     write('.'),
                                                     nl,
                                                     nl,
+                                                    //createDeck(FullDeck), //
+                                                    /*initListAwal(Number, 0, ResList),
+                                                    initDeckPemain(Number, 0, 1, ResList, FullDeck),
+                                                    afterPembagian(ResList),*/
                                                     !.
 
 /* Pembagian Kartu */
 
+initListAwal(Number, Number, _):- !.
 
+initListAwal(Number, N, ListUrutan):-   N < Number,
+                                        nth0(N, ListUrutan, Nama),    
+                                        assertz(kartu_diTangan(Nama, [])),
+                                        N1 is N + 1,
+                                        initListAwal(Number, N1, ListUrutan).
 
+initDeckPemain(Number, Number, _, _, _).
+
+initDeckPemain(Number, Number, 7, ListUrutan, FullDeck):-   N < Number,
+                                                            nth0(N, ListUrutan, Nama),
+                                                            pembagianAwal(Nama, FullDeck),
+                                                            N1 is N + 1
+                                                            initDeckPemain(Number, N1, 1, ListUrutan).
+
+initDeckPemain(Number, N, NumRand, ListUrutan, FullDeck):-  N < Number,
+                                                            nth0(N, ListUrutan, Nama),
+                                                            pembagianAwal(Nama, FullDeck),
+                                                            NextCard is NumRand + 1,
+                                                            initDeckPemain(Number, N, NextCard, ListUrutan).
+
+pembagianAwal(Nama, FullDeck):- randomCard(FullDeck, ChosenCard),
+                                retract(kartu_diTangan(Nama, ListLama)),
+                                assertz(Nama, [ChosenCard|ListLama]).
+
+afterPembagian(ListUrutan):-    write('Setiap pemain mendapatkan 7 kartu acak.'),
+                                nl,
+                                nl,
+                                nth0(0, ListUrutan, Pemain),
+                                write('Giliran '),
+                                write(Pemain).
+                            

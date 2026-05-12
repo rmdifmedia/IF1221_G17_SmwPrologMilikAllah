@@ -1,4 +1,4 @@
-:- include('src/player.pl').
+:- include('player.pl').
 :- dynamic(kartu/2).
 :- dynamic(kartuTop/2).
 :- dynamic(kartu_diTangan/2).
