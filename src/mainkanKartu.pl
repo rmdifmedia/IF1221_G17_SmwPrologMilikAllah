@@ -1,26 +1,25 @@
-/* include rules kartu */
-(startGame.pl)
-:- dynamic(discardtop/2). /* cek kartu teratas */
-:- dynamic(kartu_ditangan/1).
-:- dynamic(giliran/1). /* mengambil giliran pemain*/
+
 :- dynamic(game_started/0).
+:- dynamic(kartuTop/2). /* ambil kartu teratas */
+:- dynamic(kartu_diTangan/2).
+:- dynamic(kartu/2). /* ambil tipe kartu*/
+:- dynamic(giliran/1). /* mengambil giliran pemain*/
 
 /* helper */
 /* cek apakah kartu valid or not */
-isKartuValid(Kartu(Warna, Angka)).
 isKartuValid(Kartu(_,wild)).  /*kartu valid yaitu kartu wild*/
 isKartuValid(Kartu(_,wild4)). /*kartu valid yaitu kartu wild4 */
-isKartuValid(Kartu(warna,_)):- /*kartu valid warnanya sama*/
-    discardtop(warna,_). 
+isKartuValid(Kartu(Warna,_)):- /*kartu valid warnanya sama*/
+    kartuTop(Warna,_). 
 
-isKartuValid(Kartu(_,X)):- /*kartu valid angkanya sama*/
-    discardtop(_,X).
+isKartuValid(Kartu(_,X)):- /*kartu valid jenisnya sama*/
+    kartuTop(_,X).
 
 hapus_kartu(_,[],[]). /* menghapus kartu dari tangan(?) */
 hapus_kartu(X, [X|T], T).
-hapus_kartu(X, [H|T], [H|Terhapusy]):-
+hapus_kartu(X, [H|T], [H|Terhapus]):-
     X\==H,
-    hapus_kartu(X,T,Terhapusy).
+    hapus_kartu(X,T,Terhapus).
 
 /* buat ambil kartu dari no urutny*/
 
@@ -34,14 +33,19 @@ mainkanKartu(Urut):-
     (
         game_started.
     ->  giliran(Pemain).
+        kartu_diTangan(Pemain, IsiKartu).
 
-    getKartu(kartuPemain, Urut, Kartu).
-    (isKartuValid(Kartu) /*kalau valid*/
-    ->  hapus_kartu(Kartu, kartuPemain, updatedKartuPemain).
-        retract(kartuPemain);
-        assertz(updatedKartuPemain);
+    getKartu(IsiKartu, Urut, ChosenKartu).
+    (isKartuValid(ChosenKartu) /*kalau valid*/
+    ->  hapus_kartu(ChosenKartu, IsiKartu, UpdatedKartuPemain).
+        retract(kartu_diTangan(Pemain,_));
+        assertz(kartu_diTangan(Pemain, UpdatedKartuPemain));
+        
+        /* ganti kartu top, karena diletakkan kartu yg baru*/
+        retract(kartuTop(_,_)).
+        assertz(kartuTop(Warna, X)).
 
-        /* terapkan rules/efekk kartu yang di taro*/
+        /* terapkan rules/efek kartu yang di taruh*/
 
     ; /* kalau tidak valid*/
     write("Duhh... Kartunya gak sesuai nich!"). nl.
@@ -49,11 +53,14 @@ mainkanKartu(Urut):-
     read(Ans).
     (
         Ans == 'Cancel'
-        -> write("Kamu memilih tidak memainkan kartu. Silahkan ambil kartu."). nl.
+        -> write("Kamu memilih tidak memainkan kartu. Silahkan ambil kartu."). nl. 
+        ambilKartu.
         ;
         mainkanKartu(Ans).
     )
-        ; fail.
+    write("Selanjutnya, giliran: ~w ~n", [giliran(Pemain)]).
+        ;   write("Gamenya belum dimulai!"). nl. 
+            fail.
     )
     )
 
