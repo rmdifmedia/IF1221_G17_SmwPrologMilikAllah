@@ -1,8 +1,13 @@
-:- include('IF1221_G17_SmwPrologMilikAllah\src\player.pl').
+:- include('src/player.pl').
 :- dynamic(kartu/2).
 :- dynamic(kartuTop/2).
 :- dynamic(kartu_diTangan/2).
-:- dynamic (turn/1).
+:- dynamic(turn/1).
+:- dynamic(currColor/1).
+
+setWarna(W):-
+    retractall(currColor(_)),
+    assert(currColor(W)).
 
 /* Deklarasi Fakta */
 warna(merah).
@@ -70,8 +75,7 @@ randomCard(ListKartu, ChosenKartu):-
 ambilKartu :-
     createDeck(FullDeck),
     randomCard(FullDeck, ChosenCard),
-    turn(Urutan),
-    pemain(Urutan, Nama),
+    turn(Nama),
     retract(kartu_diTangan(Nama, ListLama)),
     assertz(kartu_diTangan(Nama, [ChosenCard|ListLama])).
 
@@ -94,14 +98,14 @@ isKartuValid(kartu(W,X)):- /*kartu valid jenisnya sama*/
     kartuTop(_,X).
 
 removeCard(_, [], []).
-removeCard(cardX, [cardX|T], T).
+removeCard(X, [X|T], T).
 removeCard(X, [H|T], [H|Terhapus]):-
     X\==H,
     removeCard(X,T,Terhapus).  
 
-setDiscardTop(ChosenCard):-
-    read(ChosenCard),
-    ChosenCard(W,J),
+setDiscardTop(kartu(W,J)):-
+    retractall(kartuTop(_,_)),
+    assert(kartuTop(W,J)),
     setWarna(W).
 
 mainkanKartu(Number):-
@@ -112,20 +116,20 @@ mainkanKartu(Number):-
     ->  removeCard(ChosenCard, ListKartu, Updated),
         retract(kartu_diTangan(Nama, ListKartu)),
         assertz(kartu_diTangan(Nama, Updated)),
-        ChosenCard(W,J),
+        ChosenCard = kartu(W,J),
         setDiscardTop(ChosenCard),
-        efekKartu(W,J).
+        efekKartu(W,J)
     
-    ;   write("Duhh... Kartunya gak sesuai nich!"). nl.
-        write("Kamu bisa menginput ulang kartu atau ketik 'Cancel' jika tidak ingin memainkan kartu :D"). nl.
-        read(Ans)
+    ;   write("Duhh... Kartunya gak sesuai nich!"), nl,
+        write("Kamu bisa menginput ulang kartu atau ketik 'Cancel' jika tidak ingin memainkan kartu :D"), nl,
+        read(Ans),
         (
             Ans == 'Cancel'
             -> ambilKartu,
                 nextTurn
             ;
-            mainkanKartu(Ans).
-        ).
+            mainkanKartu(Ans)
+        )
 
     ).
 
