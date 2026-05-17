@@ -7,7 +7,7 @@ startGame:- write('Masukkan jumlah pemain: '),
             hitungPemain(Number),
             nl,
             !,
-            pemainCounter(Number,0)
+            pemainCounter(Number,0),
             initdeck.
 
 hitungPemain(Number):-  (Number < 2;
