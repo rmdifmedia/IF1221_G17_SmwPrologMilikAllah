@@ -1,4 +1,4 @@
-:- include('fact.pl').
+//:- include('fact.pl').//
 
 /* Input jumlah pemain dengan batasan */
 
@@ -124,7 +124,7 @@ randomUrutan(Number, Number, List, ListUrutan):-    randomMember(Member, List),
 
 /* Pembagian Kartu */
 
-initListAwal(Number, Number, _):- !.
+/*initListAwal(Number, Number, _):- !.
 
 initListAwal(Number, N, ListUrutan):-   N < Number,
                                         nth0(N, ListUrutan, Nama),    
@@ -155,5 +155,5 @@ afterPembagian(ListUrutan):-    write('Setiap pemain mendapatkan 7 kartu acak.')
                                 nl,
                                 nth0(0, ListUrutan, Pemain),
                                 write('Giliran '),
-                                write(Pemain).
+                                write(Pemain).*/
                             
