@@ -12,7 +12,10 @@ penalti_N_Kartu(N, Penal):-
     N1 is N - 1, 
     penalti_N_Kartu(N1, Penal).
 
-    
+/* Helper Tangkap */
+
+
+/* Tangkap */    
 tangkap(NamaPemain):-
     kartu_diTangan(NamaPemain, ListKartu), 
     length(ListKartu, LenKartu),

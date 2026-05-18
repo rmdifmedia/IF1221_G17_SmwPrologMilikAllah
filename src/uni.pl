@@ -1,3 +1,4 @@
+/* List UNI */
 :- dynamic listUni\1
 
 listUni([]).
@@ -16,6 +17,10 @@ updateListUni:-
     retract(listUni(ListLama)),
     assertz(llistUni(ListBaru)).
 
+/* Helper UNI */
+
+
+/* UNI */
 uni(Number):-
     turn(Pemain),
     kartu_diTangan(Pemain, ListKartu),
