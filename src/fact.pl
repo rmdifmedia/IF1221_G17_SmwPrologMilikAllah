@@ -85,6 +85,8 @@ kartu(biru,drawtwo).
 kartu(hitam,wild).
 kartu(hitam,drawfour).
 
+:- initialization(initdeck).
+
 /* Deck Kartu Uni */
 findAllKartu(N,N,_).
 
@@ -139,7 +141,7 @@ getCard([_|Tail], Index, Card):-
     getCard(Tail, Newindex, Card).
 
 randomCard(ListKartu, ChosenKartu):-
-    length(ListKartu, Len),
+    list_length(ListKartu, Len),
     random(0, Len, Idx),
     getCard(ListKartu, Idx, ChosenKartu).
 
@@ -150,7 +152,7 @@ ambilKartu :-
     retract(kartu_diTangan(Nama, ListLama)),
     assertz(kartu_diTangan(Nama, [ChosenCard|ListLama])).
 
-repeat_N_ambilKartu(0, AmbilKartu):-!.
+repeat_N_ambilKartu(0, AmbilKartu):- !.
 repeat_N_ambilKartu(N, AmbilKartu):-
     N > 0,
     ambilKartu,
