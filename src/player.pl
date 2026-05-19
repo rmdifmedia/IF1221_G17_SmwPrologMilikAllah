@@ -1,5 +1,5 @@
 /* action yang berhubungan dengan player 
- cekinfo, lihat command, lihatkartu, nexturn, reversturn, giliran*/
+ cekinfo, lihat command, lihatkartu, nexturn, reversturn, turn*/
 
 :- dynamic(turn/1).
 :- dynamic(playerCount/1). 
