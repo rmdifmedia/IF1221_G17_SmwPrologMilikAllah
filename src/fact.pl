@@ -40,7 +40,7 @@ efekKartu(_, skip):-
 efekKartu(_, N) :-
     number(N), nextTurn.
 
-efekKartu(_, jreverse) :- 
+efekKartu(_, reverse) :- 
     reverseUrutan, nextTurn.
 
 efekKartu(hitam, wild) :-
