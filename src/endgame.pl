@@ -1,4 +1,3 @@
-:- include('src/startGame.pl').
 :- dynamic(kartu_diTangan/2).
 :- dynamic(kartu/2).
 
