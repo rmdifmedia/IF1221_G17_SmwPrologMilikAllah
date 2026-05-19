@@ -31,3 +31,11 @@ delete_element([Head|Tail],Index,[Head|UpdatedTail]):-
 	Index > 0,
 	NewIndex is Index - 1,
 	delete_element(Tail,NewIndex,UpdatedTail).
+
+/* Mengambil Element dari Indeks tertentu*/
+get_element([_|Tail], Index, Element):-
+	Index > 0,
+	NewIdx is Index - 1;
+	get_element(Tail, NewIdx, Element).
+get_element([Element|_], 0, Element).
+
