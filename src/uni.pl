@@ -7,11 +7,8 @@
 :- dynamic(kartu_diTangan/2).
 :- dynamic(updateListUni/0).
 
-turn(sawit).
-kartu_diTangan(sawit, [kartu(merah, 0), kartu(kuning, 1)]).
-
 /* List UNI */
-listUni([]).
+/* listUni([]). */
 
 addListUni(Nama):-
     retract(listUni(ListLama)),
