@@ -2,8 +2,7 @@
  cekinfo, lihat command, lihatkartu, nexturn, reversturn, giliran*/
 
 :- dynamic(turn/1).
-:- dynamic(playerCount/1). 
-:- dynamic(listUrutan/1). %ListUrutan(List).
+:- dynamic(jumlah/1).
 :- dynamic(arah/1).
 
 nextTurn :- 
@@ -98,12 +97,6 @@ info_pemain(FullList, [Nama|Tail]) :-
     length(ListKartu, Jum),
     format('Nama pemain ~d: ~w~n Jumlah kartu: ~d~n', [Index,Nama,Jum]),
     info_pemain(FullList, Tail).
-
-get_index([Element|_], 1, Element).
-get_index([_|Tail], Index, Element) :-
-    Index > 1,
-    Newindex is Index-1,
-    get_index(Tail, NewIndex, Element).
 
 listPemain(ListPemain) :-
     open('dataNama.txt', read, Stream),

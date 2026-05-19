@@ -4,6 +4,7 @@
 :- dynamic(turn/1).
 :- dynamic(currColor/1).
 :- dynamic(deck/1).
+:- dynamic(listTantang/1).
 
 setWarna(W):-
     retractall(currColor(_)),
@@ -58,8 +59,15 @@ efekKartu(_, drawtwo) :-
     nextTurn.
 
 efekKartu(hitam, drawfour) :-
+    turn(Pemain),
     repeat_N_ambilKartu(4, AmbilKartu),
+    addListTantang(Pemain),
     nextTurn.
+
+listTantang([]).
+addListTantang(Nama):-
+    retract(listTantang(ListLama)),
+    assertz(listTantang([Nama|ListLama])).
 
 /* Helper */
 getCard([Card|_], 0, Card).
@@ -133,27 +141,21 @@ mainkanKartu(Number):-
         )
 
     ).
-<<<<<<< HEAD
-    
-/*listUni :-
-=======
-
-
-
-    /*listUni :-
->>>>>>> 7afd7f43b98ae8bc5c9e3bf24d131656d689b600
-        findall(Nama, pemain(Nama), ListUNI).
-
-    tambahOrangUni(Nama) :-
-        assertz(pemain(Nama)).
-
-    uni(Number) :-
-        turn(Pemain),
-        kartu_diTangan(Pemain, ListKartu),
-        member(Kartu, ListKartu), 
-        isKartuValid(Kartu),
-        length(ListKartu, Length),
-        Length =:= 2,
-        mainkanKartu(Number),
-        append(ListUNI, Pemain)
-*/
+      
+tantang :-
+    turn(Pemain),
+    kartuTop(hitam,drawfour),
+    currColor(WarnaAktif),
+    write("Tantangan Dilakukan!"), nl,
+    listTantang([PrevPemain|_]),
+    (member(kartu(WarnaAktif,_), ListKartu)
+    -> write("Tantangan Berhasil"), nl,
+    format("~w Mendapatkan 4 Kartu Acak...", [PrevPemain]), nl,
+    nextTurn, repeat_N_ambilKartu(4), nextTurn
+    ;
+    write("Tantangan Gagal"), nl,
+    format("~w Mendapatkan 6 Kartu Acak...", [Pemain]), nl,
+    repeat_N_ambilKartu(6), nextTurn
+    ), 
+    retractall(listTantang(_)),  
+    assertz(listTantang([])).
