@@ -213,7 +213,4 @@ firstTurn:-
     write('Giliran '),
     write(FirstPlayer),
     write('.'),
-    assertz(turn(FirstPlayer)),
-    setDiscardTop(merah,draw_two),
-    retract(kartu_diTangan(FirstPlayer,_)),
-    assertz(kartu_diTangan(FirstPlayer,[merah-draw_two,merah-draw_two,hijau-draw_two])).                  
+    assertz(turn(FirstPlayer)).                  
