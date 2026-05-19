@@ -62,7 +62,8 @@ aksi_utama_tersedia(Pemain, mainkanKartu) :-
     member(Kartu, ListKartu), 
     isKartuValid(Kartu), !.
 
-printNomor(_, []).
+printNomor(_, []):-
+    !.
 printNomor(N, [H|T]) :-
     format('~w. ~w~n', [N, H]),
     N1 is N + 1,
@@ -78,7 +79,8 @@ lihatCommand :-
         printNomor(1, [lihatCommand, lihatKartu, cekInfo]).
 
 
-printKartu(_, []).
+printKartu(_, []):-
+    !.
 printKartu(N, [Kartu | T] ) :-
     format('~w. ~w~n', [N, Kartu]),
     N1 is N + 1,
