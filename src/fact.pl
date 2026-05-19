@@ -134,6 +134,8 @@ mainkanKartu(Number):-
 
     ).
 
+
+
     /*listUni :-
         findall(Nama, pemain(Nama), ListUNI).
 
