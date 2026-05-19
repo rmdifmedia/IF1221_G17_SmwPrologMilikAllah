@@ -133,17 +133,10 @@ efekKartu(hitam, drawfour) :-
     repeat_N_ambilKartu(4, AmbilKartu),
     nextTurn.
 
-/* Helper */
-getCard([Card|_], 0, Card).
-getCard([_|Tail], Index, Card):-
-    Index > 0,
-    Newindex is Index - 1,
-    getCard(Tail, Newindex, Card).
-
 randomCard(ListKartu, ChosenKartu):-
     list_length(ListKartu, Len),
     random(0, Len, Idx),
-    getCard(ListKartu, Idx, ChosenKartu).
+    get_index(ListKartu, Idx, ChosenKartu).
 
 ambilKartu :-
     fullDeck(Deck),
@@ -184,7 +177,7 @@ setDiscardTop(kartu(W,J)):-
 mainkanKartu(Number):-
     turn(Nama),
     kartu_diTangan(Nama, ListKartu),
-    getCard(ListKartu, Number, ChosenCard),
+    get_index(ListKartu, Number, ChosenCard),
     ( isKartuValid(ChosenCard)
     ->  removeCard(ChosenCard, ListKartu, Updated),
         retract(kartu_diTangan(Nama, ListKartu)),
