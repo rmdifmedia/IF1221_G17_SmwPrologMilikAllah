@@ -130,17 +130,24 @@ efekKartu(_, drawtwo) :-
     nextTurn.
 
 efekKartu(hitam, drawfour) :-
+    turn(PrevPlayer),
     write('Pilih Warna Aktif : '), nl,
     read(WarnaAktif),
     (
         warna(WarnaAktif)
         ->  setWarna(WarnaAktif)
         ;   write('Warna tidak valid! Silahkan pilih warna lain :-D'), nl,
-            efekKartu(hitam, wild)
+            efekKartu(hitam, drawfour)
     ),
-    nextTurn,
-    repeat_N_ambilKartu(4, AmbilKartu),
+    addListTantang(PrevPlayer),
     nextTurn.
+
+opsiDrawFour(1) :- 
+    repeat_N_ambilKartu(4),
+    nextTurn.
+
+opsiDrawFour(2) :-
+    tantang.
 
 listTantang([]).
 addListTantang(Nama):-
@@ -260,5 +267,6 @@ mainkanKartu(Number):-
     assertz(kartuTop(hijau, 5)),
     assertz(arah(kanan)),
     assertz(playerCount(2)),
+    assertz(listTantang([])).
     initdeck.
 */
