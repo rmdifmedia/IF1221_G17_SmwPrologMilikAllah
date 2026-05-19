@@ -16,23 +16,22 @@ nextTurn :-
     turn(Nama),
     arah(Arah),
     playerCount(Jumlah),
-
-    get_element(ListUrutan, Index, Nama),
+    listUrutan(ListUrutan),
+    find_index(ListUrutan, Index, Nama),
     (Arah = kanan
     -> Next is (Index+1) mod Jumlah
     ; Next is (Index-1) mod Jumlah),
-
     get_index(ListUrutan, Next, NamaNext),
-    retract(turn(_)),
-    assert(turn(NamaNext)).
+    retractall(turn(_)),
+    assertz(turn(NamaNext)).
 
 reverseUrutan :-
     (
         arah(kanan)
-        -> retract(arah(kanan)),
-            assert(arah(kiri))
-        ; retract(arah(kiri)),
-        assert(arah(kanan)) 
+        -> retractall(arah(kanan)),
+            assertz(arah(kiri))
+        ; retractall(arah(kiri)),
+        assertz(arah(kanan)) 
     ).
 
 aksiUtama(Pemain, AksUtamaList) :-
@@ -99,27 +98,29 @@ lihatKartu :-
 
 info_pemain(_,[]).
 info_pemain(FullList, [Nama|Tail]) :-
-    get_index(FullList, Index, Nama),
+    find_index(FullList, Index, Nama),
     kartu_diTangan(Nama, ListKartu),
-    length(ListKartu, Jum),
-    format('Nama pemain ~d: ~w~n Jumlah kartu: ~d~n', [Index,Nama,Jum]),
+    list_length(ListKartu, Jum),
+    format('Nama pemain ~d: ~w~nJumlah kartu: ~d~n', [Index+1,Nama,Jum]),
     info_pemain(FullList, Tail).
 
-get_index([Element|_], 1, Element).
-get_index([_|Tail], Index, Element) :-
-    Index > 1,
-    Newindex is Index-1,
-    get_index(Tail, NewIndex, Element).
+print_Urutan([]).
+print_Urutan([Nama]):-
+    write(Nama),
+    !.
 
-listPemain(ListPemain) :-
-    open('dataNama.txt', read, Stream),
-    read(Stream, ListPemain),
-    close(Stream).
+print_Urutan([Nama|T]):-
+    write(Nama),
+    write(' - '),
+    print_Urutan(T).
 
 cekInfo :-
-    kartuTop(Warna, jenis),
-    format('Kartu discard top: ~w - ~w~n', [Warna, Jenis]),
-    listPemain(ListPemain),
+    kartuTop(Warna, Jenis),
+    format('Kartu discard top: ~w - ~w~n', [Warna, Jenis]), nl, 
+    listUrutan(ListPemain),
+    write('Urutan Pemain : '), 
+    print_Urutan(ListPemain), nl, 
+    nl,
     info_pemain(ListPemain, ListPemain).
 
 /* UNI */
