@@ -8,9 +8,12 @@ poinCard(kartu(W,N), N):-
     N>=0,
     N=<9.
 
-poinCard(kartu(_,skip), 10).
-poinCard(kartu(_,jreverse), 10).
-poinCard(kartu(_,drawtwo), 10).
+poinCard(kartu( W,skip), 10):-
+    warna(W).
+poinCard(kartu(W,jreverse), 10):-
+    warna(W).
+poinCard(kartu(W,drawtwo), 10):-
+    warna(W).
 
 poinCard(kartu(hitam, wild), 20).
 poinCard(kartu(hitam, drawfour), 20).
@@ -107,13 +110,20 @@ printRank([statsPlayer(Nama, Poin, _, _)|Tail], Rank) :-
     NextRank is Rank + 1,
     printRank(Tail, NextRank).
 
+
+/* dummy fakta*/
+warna(merah).
+warna(kuning).
+warna(hijau).
+warna(biru).
+
 /*dummy*/
 urutanPemain(['Raya', 'Sisi']).
-kartu_diTangan('Raya', [kartu(merah,9), kartu(hitam, wild), kartu(hijau, 1), kartu(_,skip)]).
+kartu_diTangan('Raya', [kartu(merah,9), kartu(hitam, wild), kartu(hijau, 1), kartu(biru,skip)]).
 kartu_diTangan('Sisi', []).
 
 
-endgame:-
+endGame:-
     urutanPemain(ListUrutan),
     statsAllPlayer(ListUrutan, 1, HasilStats),
     insert_sort(HasilStats, SortedUrutan),

@@ -133,15 +133,8 @@ mainkanKartu(Number):-
         )
 
     ).
-<<<<<<< HEAD
     
 /*listUni :-
-=======
-
-
-
-    /*listUni :-
->>>>>>> 7afd7f43b98ae8bc5c9e3bf24d131656d689b600
         findall(Nama, pemain(Nama), ListUNI).
 
     tambahOrangUni(Nama) :-
