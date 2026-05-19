@@ -1,6 +1,3 @@
-:- include('helper.pl').
-:- include('player.pl').
-
 :- dynamic(kartu/2).
 :- dynamic(kartuTop/2).
 :- dynamic(kartu_diTangan/2).
@@ -25,7 +22,7 @@ jenis(4). jenis(5). jenis(6). jenis(7). jenis(8).
 jenis(9).
 jenis(skip).
 jenis(reverse).
-jenis(drawtwo).
+jenis(draw_two).
 
 kartu(W, N) :- 
     warna(W),
@@ -44,7 +41,7 @@ kartu(merah,8).
 kartu(merah,9).
 kartu(merah,skip).
 kartu(merah,reverse).
-kartu(merah,drawtwo).
+kartu(merah,draw_two).
 kartu(kuning,0).
 kartu(kuning,1).
 kartu(kuning,2).
@@ -57,7 +54,7 @@ kartu(kuning,8).
 kartu(kuning,9).
 kartu(kuning,skip).
 kartu(kuning,reverse).
-kartu(kuning,drawtwo).
+kartu(kuning,draw_two).
 kartu(hijau,0).
 kartu(hijau,1).
 kartu(hijau,2).
@@ -70,7 +67,7 @@ kartu(hijau,8).
 kartu(hijau,9).
 kartu(hijau,skip).
 kartu(hijau,reverse).
-kartu(hijau,drawtwo).
+kartu(hijau,draw_two).
 kartu(biru,0).
 kartu(biru,1).
 kartu(biru,2).
@@ -83,9 +80,9 @@ kartu(biru,8).
 kartu(biru,9).
 kartu(biru,skip).
 kartu(biru,reverse).
-kartu(biru,drawtwo).
+kartu(biru,draw_two).
 kartu(hitam,wild).
-kartu(hitam,drawfour).
+kartu(hitam,wild_draw_four).
 
 :- initialization(initdeck).
 
@@ -113,7 +110,7 @@ efekKartu(_, skip):-
 efekKartu(_, N) :-
     number(N), nextTurn.
 
-efekKartu(_, jreverse) :- 
+efekKartu(_, reverse) :- 
     reverseUrutan, nextTurn.
 
 efekKartu(hitam, wild) :-
@@ -158,15 +155,16 @@ randomCard(ListKartu, ChosenKartu):-
     get_index(ListKartu, Idx, ChosenKartu).
 
 ambilCartu :-
-    deck(FullDeck),
-    randomCard(FullDeck, ChosenCard),
+    fullDeck(Deck),
+    randomCard(Deck,ChosenCard),
     turn(Nama),
     retract(kartu_diTangan(Nama, ListLama)),
     assertz(kartu_diTangan(Nama, [ChosenCard|ListLama])).
 
 ambilKartu :-
     repeat_N_ambilKartu(1, AmbilKartu),
-    nextTurn.
+    nextTurn,
+    !.
 
 repeat_N_ambilKartu(0, AmbilKartu):- !.
 repeat_N_ambilKartu(N, AmbilKartu):-
@@ -177,14 +175,15 @@ repeat_N_ambilKartu(N, AmbilKartu):-
 
 /* mainkanKartu */
 /* Helper */
-isKartuValid(kartu(W, J)) :-
+isKartuValid(W, J) :-
     \+ W == hitam,
     currColor(W).
-isKartuValid(kartu(hitam,_)).  /*kartu valid yaitu kartu wild*/
-isKartuValid(kartu(W,_)):- /*kartu valid warnanya sama*/
+isKartuValid(hitam,J):- /*kartu valid yaitu kartu wild*/
+    kartuTop(W,_),
+    W \== hitam.
+isKartuValid(W,_):- /*kartu valid warnanya sama*/
     kartuTop(W,_). 
-
-isKartuValid(kartu(W,X)):- /*kartu valid jenisnya sama*/
+isKartuValid(W,X):- /*kartu valid jenisnya sama*/
     \+ W == 'hitam',
     \+ X == 'drawtwo',
     kartuTop(_,X).
@@ -195,7 +194,7 @@ removeCard(X, [H|T], [H|Terhapus]):-
     X\==H,
     removeCard(X,T,Terhapus).  
 
-setDiscardTop(kartu(W,J)):-
+setDiscardTop(W,J):-
     retractall(kartuTop(_,_)),
     assertz(kartuTop(W,J)),
     setWarna(W).
@@ -222,14 +221,15 @@ mainkanKartu(Number):-
     turn(Nama),
     kartu_diTangan(Nama, ListKartu),
     listUrutan(ListPemain),
-    get_index(ListKartu, Number-1, ChosenCard),
-    ( isKartuValid(ChosenCard)
+    Index is Number - 1,
+    get_index(ListKartu, Index, ChosenCard),
+    get_index(ListKartu, Index, ChosenW-ChosenJ),
+    ( isKartuValid(ChosenW,ChosenJ)
     ->  removeCard(ChosenCard, ListKartu, Updated),
         retractall(kartu_diTangan(Nama, ListKartu)),
         assertz(kartu_diTangan(Nama, Updated)),
-        ChosenCard = kartu(W,J),
-        setDiscardTop(ChosenCard),
-        efekKartu(W,J)
+        setDiscardTop(ChosenW,ChosenJ),
+        efekKartu(ChosenW,ChosenJ)
     
     ;   write('Duhh... Kartunya gak sesuai nich!'), nl,
         write('Kamu bisa menginput ulang kartu atau ketik ''Cancel'' jika tidak ingin memainkan kartu :D'), nl,

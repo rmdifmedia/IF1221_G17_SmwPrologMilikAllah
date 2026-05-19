@@ -123,7 +123,8 @@ cekInfo :-
     write('Urutan Pemain : '), 
     print_Urutan(ListPemain), nl, 
     nl,
-    info_pemain(ListPemain, ListPemain).
+    info_pemain(ListPemain, ListPemain),
+    !.
 
 /* UNI */
 /* List UNI */

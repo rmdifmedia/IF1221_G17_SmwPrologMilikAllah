@@ -9,6 +9,7 @@
 /* Input jumlah pemain dengan batasan */
 startGame:-
     initdeck,
+    retractall(arah(_)),
     retractall(turn(_)),
     retractall(kartuTop(_,_)),
     retractall(listKartu(_)),
@@ -17,6 +18,7 @@ startGame:-
     retractall(listPlayer(_)),
     retractall(playerName(_)),
     retractall(playerCount(_)),
+    assertz(arah(kanan)),
     assertz(gameRun(true)),
     inputPemain,
     !.
@@ -165,7 +167,8 @@ ambilKartuAwal(N,List,Deck):-
     N1 is N - 1,
     ambilKartuAwal(N1,NewList,Deck).
 
-bagiKartu(Jumlah,Jumlah,Deck,CurrentPlayer):-
+bagiKartu(Jumlah,Jumlah,Deck,ListPlayer):-
+    get_index(ListPlayer,0,CurrentPlayer),
     ambilKartuAwal(7,[],Deck),
     listKartu(DeckPlayer),
     assertz(kartu_diTangan(CurrentPlayer,DeckPlayer)),
@@ -195,6 +198,8 @@ bagiDeck:-
 discardFirst(Deck):-
     random(0,54,Index),
     get_index(Deck,Index,Kartu),
+    get_index(Deck,Index,W-J),
+    setDiscardTop(W,J),
     write('Kartu discard top: '),
     write(Kartu),
     write('.'),
@@ -208,4 +213,7 @@ firstTurn:-
     write('Giliran '),
     write(FirstPlayer),
     write('.'),
-    assertz(turn(FirstPlayer)).                  
+    assertz(turn(FirstPlayer)),
+    setDiscardTop(merah,draw_two),
+    retract(kartu_diTangan(FirstPlayer,_)),
+    assertz(kartu_diTangan(FirstPlayer,[merah-draw_two,merah-draw_two,hijau-draw_two])).                  
