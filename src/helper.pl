@@ -15,11 +15,11 @@ list_length([_|Tail],Len):-
 
 /*Mendapatkan Akses Elemen berdasarkan Indeks*/
 
-get_index([Element|_],0,Element).
 get_index([_|Tail],Index,Element):-
 	Index > 0,
 	NewIndex is Index - 1,
 	get_index(Tail,NewIndex,Element).
+get_index([Element|_],0,Element).
 
 /*Menghapus Elemen*/
 
@@ -29,10 +29,10 @@ delete_element([Head|Tail],Index,[Head|UpdatedTail]):-
 	NewIndex is Index - 1,
 	delete_element(Tail,NewIndex,UpdatedTail).
 
-/* Mengambil Element dari Indeks tertentu*/
-get_element([_|Tail], Index, Element):-
-	Index > 0,
-	NewIdx is Index - 1;
-	get_element(Tail, NewIdx, Element).
-get_element([Element|_], 0, Element).
 
+/* mencari idenks dari suatu element*/
+find_index([Element|_], 0, Element).
+find_index([Head|Tail], Index, Element) :-
+    Head \= Element,
+    find_index(Tail, Index1, Element),
+    Index is Index1 + 1.

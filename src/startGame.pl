@@ -1,5 +1,3 @@
-:- include('fact.pl').
-
 /*Deklarasi Fakta*/
 :- dynamic(gameRun/1).     %gameRun(Status)
 :- dynamic(playerName/1).  %playerName(Player)
@@ -11,6 +9,7 @@
 /* Input jumlah pemain dengan batasan */
 startGame:-
     initdeck,
+    retractall(turn(_)),
     retractall(kartuTop(_,_)),
     retractall(listKartu(_)),
     retractall(kartu_diTangan(_,_)),
@@ -133,7 +132,7 @@ randomMember(List,Player,Idx):-
 
 randomUrutan(Number, Number, List, ListUrutan):-
     randomMember(List,Player,Idx),
-    append(ListUrutan, Player, ResList),
+    append_element(ListUrutan, Player, ResList),
     write(Player),
     write('.'),
     assertz(listUrutan(ResList)),
@@ -208,4 +207,5 @@ firstTurn:-
     get_index(Urutan,0,FirstPlayer),
     write('Giliran '),
     write(FirstPlayer),
-    write('.').                  
+    write('.'),
+    assertz(turn(FirstPlayer)).                  
