@@ -65,7 +65,7 @@ aksi_utama_tersedia(Pemain, mainkanKartu) :-
 
 printNomor(_, []).
 printNomor(N, [H|T]) :-
-    format('~w, ~w~n', [N, H]),
+    format('~w. ~w~n', [N, H]),
     N1 is N + 1,
     printNomor(N1, T).
 
@@ -80,8 +80,8 @@ lihatCommand :-
 
 
 printKartu(_, []).
-printKartu(N, [kartu(Warna, Jenis) | T] ) :-
-    format('~w. ~w-~w~n', [N, Warna, Jenis]),
+printKartu(N, [Kartu | T] ) :-
+    format('~w. ~w~n', [N, Kartu]),
     N1 is N + 1,
     printKartu(N1, T).
 
