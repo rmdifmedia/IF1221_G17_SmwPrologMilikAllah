@@ -8,6 +8,7 @@
 :- dynamic(currColor/1).
 :- dynamic(deck/1).
 :- dynamic(fullDeck/1).
+:- dynamic(listTantang/1).
 
 setWarna(W):-
     retractall(currColor(_)),
@@ -144,6 +145,11 @@ efekKartu(hitam, drawfour) :-
     repeat_N_ambilKartu(4, AmbilKartu),
     nextTurn.
 
+listTantang([]).
+addListTantang(Nama):-
+    retract(listTantang(ListLama)),
+    assertz(listTantang([Nama|ListLama])).
+
 /* Helper */
 
 randomCard(ListKartu, ChosenKartu):-
@@ -194,6 +200,24 @@ setDiscardTop(kartu(W,J)):-
     assertz(kartuTop(W,J)),
     setWarna(W).
 
+tantang :-
+    turn(Pemain),
+    kartuTop(hitam,drawfour),
+    currColor(WarnaAktif),
+    write("Tantangan Dilakukan!"), nl,
+    listTantang([PrevPemain|_]),
+    (member(kartu(WarnaAktif,_), ListKartu)
+    -> write("Tantangan Berhasil"), nl,
+    format("~w Mendapatkan 4 Kartu Acak...", [PrevPemain]), nl,
+    nextTurn, repeat_N_ambilKartu(4), nextTurn
+    ;
+    write("Tantangan Gagal"), nl,
+    format("~w Mendapatkan 6 Kartu Acak...", [Pemain]), nl,
+    repeat_N_ambilKartu(6), nextTurn
+    ), 
+    retractall(listTantang(_)),  
+    assertz(listTantang([])).
+
 mainkanKartu(Number):-
     turn(Nama),
     kartu_diTangan(Nama, ListKartu),
@@ -220,7 +244,9 @@ mainkanKartu(Number):-
 
     ), !.
 
-initDummy :-
+
+
+/* initDummy :-
     retractall(listUrutan(_)),
     retractall(kartu_diTangan(_,_)),
     retractall(turn(_)),
@@ -235,3 +261,4 @@ initDummy :-
     assertz(arah(kanan)),
     assertz(playerCount(2)),
     initdeck.
+*/
