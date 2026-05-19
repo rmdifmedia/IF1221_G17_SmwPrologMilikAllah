@@ -1,5 +1,6 @@
 :- include('src/startGame.pl').
 :- dynamic(kartu_diTangan/2).
+:- dynamic(kartu/2).
 
 /* fungsi helper mengambil besaran poin tiap kartu*/
 poinCard(kartu(_,N), N):-
@@ -75,13 +76,13 @@ printSkor([K|T]) :-
 printKartu([]):-
     write('Kartu Habis!').
 
-printKartu([K(W,J)]) :-
+printKartu([kartu(W,J)]) :-
     write(W), 
     write('-'),
     write(J),
     !.
 
-printKartu([K(W,J)|T]) :-
+printKartu([kartu(W,J)|T]) :-
     write(W), 
     write('-'),
     write(J),
@@ -89,13 +90,31 @@ printKartu([K(W,J)|T]) :-
 
 print_details([]).
 print_details([Nama|SisaPemain]) :-
-    kartu_ditangan(Nama, ListKartu),
+    kartu_diTangan(Nama, ListKartu),
     hitungSkor(ListKartu, TotalPoin, _),
     write(Nama), write(': '),
-    print_kartu(ListKartu), write(' = '),
-    print_nilai(ListKartu), write(' = '),
+    printKartu(ListKartu), write(' = '),
+    printSkor(ListKartu), write(' = '),
     write(TotalPoin), write(' poin'), nl,
     print_details(SisaPemain).
+
+printRank([], _).
+printRank([statsPlayer(Nama, Poin, _, _)|Tail], Rank) :-
+    format('~w. ~w (~w poin)~n', [Rank, Nama, Poin]),
+    NextRank is Rank + 1,
+    printRank(Tail, NextRank).
    
 endgame:-
+    urutanPemain(ListUrutan),
+    statsAllPlayer(ListUrutan, 1, HasilStats),
+    insert_sort(HasilStats, SortedUrutan),
+    kartu_diTangan(Pemenang, []), !,
+    format('Permainan selesai! Selamat ~w memenangkan permainan', [Pemenang]),
+    write('Berikut perhitungan poin sisa kartu'),
+    print_details(ListUrutan), nl,
+    write('Urutan Pemenang :'), nl,
+    printRank(SortedUrutan, 1), nl.
+
+
+
 
