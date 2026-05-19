@@ -63,13 +63,13 @@ insert([H|T],X,[H|T2]) :-
 printSkor([]) :- 
     write('0').
 
-printSkor([K]):-
-    poinCard(K, V),
+printSkor([kartu(W,J)]):-
+    poinCard(kartu(W,J), V),
     write(V),
     !.
 
-printSkor([K|T]) :-
-    poinCard(K, V),
+printSkor([kartu(W,J)|T]) :-
+    poinCard(kartu(W,J), V),
     write(V),
     printSkor(T).
 
