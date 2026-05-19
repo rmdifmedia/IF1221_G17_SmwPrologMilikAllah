@@ -128,8 +128,8 @@ randomMember(List,Player,Idx):-
 
 randomUrutan(Number, Number, List, ListUrutan):-
     randomMember(List,Player,Idx),
-    append(ListUrutan, [Member], ResList),
-    write(Member),
+    append(ListUrutan, Player, ResList),
+    write(Player),
     write('.'),
     assertz(listUrutan(ResList)),
     nl,
@@ -140,7 +140,7 @@ randomUrutan(Number, N, List, ListUrutan):-
     N < Number,
     !,
     randomMember(List,Player,Idx),
-    append_element(ListUrutan, [Player], ResList),
+    append_element(ListUrutan, Player, ResList),
     write(Player),
     write(' - '),
     delete_element(List,Idx,NewList),
