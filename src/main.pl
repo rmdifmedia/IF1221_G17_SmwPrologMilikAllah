@@ -1,10 +1,10 @@
-:- include ('src/player.pl').
-:- include ('src/fact.pl').
-:- include ('src/startGame.pl').
+:- include('player.pl').
+:- include('fact.pl').
+:- include('startGame.pl').
 :- initialization(main).
 
 main :-
-    format('>> New Game ~n >> Load Game ~n Ketik Opsi: '),
+    format('>> New Game ~n >> Load Game ~n Ketik Opsi: ', []),
     read(Opsi),
     (Opsi = 'New Game'
     -> startGame

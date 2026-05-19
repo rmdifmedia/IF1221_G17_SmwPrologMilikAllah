@@ -1,7 +1,6 @@
 /* action yang berhubungan dengan player 
  cekinfo, lihat command, lihatkartu, nexturn, reversturn, giliran*/
 
-:- include('fact.pl').
 :- dynamic(turn/1).
 :- dynamic(jumlah/1).
 :- dynamic(arah/1).
@@ -80,7 +79,7 @@ lihatKartu :-
         write('Berikut kartu yang anda miliki.'), nl,
         (   kartu_diTangan(Pemain, ListKartu)
         ->  printKartu(1, ListKartu)
-        ; write('Kamu! tidak memiliki kartu!'), nl,
+        ; write('Kamu! tidak memiliki kartu!'), nl
         ).
 
 
