@@ -73,7 +73,7 @@ randomCard(ListKartu, ChosenKartu):-
     random(0, Len, Idx),
     getCard(ListKartu, Idx, ChosenKartu).
 
-ambilKartu :-
+ambilKartu:-
     deck(FullDeck),
     randomCard(FullDeck, ChosenCard),
     turn(Nama),
@@ -121,8 +121,8 @@ mainkanKartu(Number):-
         setDiscardTop(ChosenCard),
         efekKartu(W,J)
     
-    ;   write("Duhh... Kartunya gak sesuai nich!"), nl,
-        write("Kamu bisa menginput ulang kartu atau ketik 'Cancel' jika tidak ingin memainkan kartu :D"), nl,
+    ;   write('Duhh... Kartunya gak sesuai nich!'), nl,
+        write('Kamu bisa menginput ulang kartu atau ketik "Cancel" jika tidak ingin memainkan kartu :D'), nl,
         read(Ans),
         (
             Ans == 'Cancel'
@@ -133,20 +133,3 @@ mainkanKartu(Number):-
         )
 
     ).
-    
-/*listUni :-
-        findall(Nama, pemain(Nama), ListUNI).
-
-    tambahOrangUni(Nama) :-
-        assertz(pemain(Nama)).
-
-    uni(Number) :-
-        turn(Pemain),
-        kartu_diTangan(Pemain, ListKartu),
-        member(Kartu, ListKartu), 
-        isKartuValid(Kartu),
-        length(ListKartu, Length),
-        Length =:= 2,
-        mainkanKartu(Number),
-        append(ListUNI, Pemain)
-*/
