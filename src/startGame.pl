@@ -9,6 +9,7 @@
 /* Input jumlah pemain dengan batasan */
 startGame:-
     initdeck,
+    retractall(turn(_)),
     retractall(kartuTop(_,_)),
     retractall(listKartu(_)),
     retractall(kartu_diTangan(_,_)),
@@ -206,4 +207,5 @@ firstTurn:-
     get_index(Urutan,0,FirstPlayer),
     write('Giliran '),
     write(FirstPlayer),
-    write('.').                  
+    write('.'),
+    assertz(turn(FirstPlayer)).                  
