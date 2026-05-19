@@ -12,10 +12,6 @@
 :- dynamic(updateListUni/0).
 /* UNI */
 
-/* TANGKAP */
-
-/* TANGKAP */
-
 nextTurn :- 
     turn(Nama),
     arah(Arah),
@@ -187,7 +183,6 @@ uni(Number):-
 /* NOTES: repeat_N_ambilKartu gagal. Pending benerin fact.pl ke yang work di gnu prolog */
 /* SOLUSI: karena dummy, sementara fact pakai dikasih inilization initdeck. Selain buat ngecek uni sendiri, inilization di fact, hapus. */
 
-/* # Sementara dimatiin sampai efek kartu berhasil diimplikasi #
 uni(Number):-
     uni_Info(Pemain, ListKartu),
     getCard(ListKartu, Number, Kartu),
@@ -196,19 +191,18 @@ uni(Number):-
     write('Kartu tidak sesuai dengan efek sebelumnya. Masukkan nomor kartu dengan efek yang sesuai: '),
     read(NewNumber),
     uni(NewNumber).
-*/
+
 
 uni(Number):-
     uni_Info(Pemain, ListKartu),
     list_length(ListKartu, LenKartu),
     (Number > 0, (Number < LenKartu ; Number == LenKartu)),
-    /* # Sementara dimatiin sampai efek kartu berhasil diimplikasi # */
-    /* Number1 is Number - 1,
+    Number1 is Number - 1,
     getCard(ListKartu, Number1, Kartu),
-    isKartuValid(Kartu), */
+    isKartuValid(Kartu),
     LenKartu =:= 2,
     !,
-    /* mainkanKartu(Number), # Sementara dimatiin sampai main dari awal #*/  
+    mainkanKartu(Number),
     write(Pemain), write(' menyerukan UNI!'), nl,
     addListUni(Pemain).
 
