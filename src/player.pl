@@ -1,28 +1,32 @@
 /* action yang berhubungan dengan player 
  cekinfo, lihat command, lihatkartu, nexturn, reversturn, turn*/
 
-:- include('src/fact.pl').
 :- dynamic(turn/1).
-:- dynamic(jumlah/1).
+:- dynamic(playerCount/1). 
+:- dynamic(listUrutan/1). %ListUrutan(List).
 :- dynamic(arah/1).
 
 nextTurn :- 
     turn(Nama),
     arah(Arah),
-    jumlah(Jumlah),
-    (Arah = maju
-    -> Next is (Nama+1) mod Jumlah
-    ; Next is (Nama-1) mod Jumlah),
+    playerCount(Jumlah),
+
+    get_element(ListUrutan, Index, Nama),
+    (Arah = kanan
+    -> Next is (Index+1) mod Jumlah
+    ; Next is (Index-1) mod Jumlah),
+
+    get_index(ListUrutan, Next, NamaNext),
     retract(turn(_)),
-    assert(turn(Next)).
+    assert(turn(NamaNext)).
 
 reverseUrutan :-
     (
-        arah(maju)
-        -> retract(arah(maju)),
-            assert(arah(mundur))
-        ; retract(arah(mundur)),
-        assert(arah(maju)) 
+        arah(kanan)
+        -> retract(arah(kanan)),
+            assert(arah(kiri))
+        ; retract(arah(kiri)),
+        assert(arah(kanan)) 
     ).
 
 aksiUtama(Pemain, AksUtamaList) :-
@@ -80,7 +84,7 @@ lihatKartu :-
         write('Berikut kartu yang anda miliki.'), nl,
         (   kartu_diTangan(Pemain, ListKartu)
         ->  printKartu(1, ListKartu)
-        ; write('Kamu! tidak memiliki kartu!'), nl,
+        ; write('Kamu! tidak memiliki kartu!'), nl
         ).
 
 
