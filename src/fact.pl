@@ -22,7 +22,7 @@ jenis(0). jenis(1). jenis(2). jenis(3).
 jenis(4). jenis(5). jenis(6). jenis(7). jenis(8).
 jenis(9).
 jenis(skip).
-jenis(jreverse).
+jenis(reverse).
 jenis(drawtwo).
 
 kartu(W, N) :- 
@@ -41,7 +41,7 @@ kartu(merah,7).
 kartu(merah,8).
 kartu(merah,9).
 kartu(merah,skip).
-kartu(merah,jreverse).
+kartu(merah,reverse).
 kartu(merah,drawtwo).
 kartu(kuning,0).
 kartu(kuning,1).
@@ -54,7 +54,7 @@ kartu(kuning,7).
 kartu(kuning,8).
 kartu(kuning,9).
 kartu(kuning,skip).
-kartu(kuning,jreverse).
+kartu(kuning,reverse).
 kartu(kuning,drawtwo).
 kartu(hijau,0).
 kartu(hijau,1).
@@ -67,7 +67,7 @@ kartu(hijau,7).
 kartu(hijau,8).
 kartu(hijau,9).
 kartu(hijau,skip).
-kartu(hijau,jreverse).
+kartu(hijau,reverse).
 kartu(hijau,drawtwo).
 kartu(biru,0).
 kartu(biru,1).
@@ -80,10 +80,10 @@ kartu(biru,7).
 kartu(biru,8).
 kartu(biru,9).
 kartu(biru,skip).
-kartu(biru,jreverse).
+kartu(biru,reverse).
 kartu(biru,drawtwo).
-kartu(hitam, wild).
-kartu(hitam, drawfour).
+kartu(hitam,wild).
+kartu(hitam,drawfour).
 
 /* Deck Kartu Uni */
 findAllKartu(N,N,_).
