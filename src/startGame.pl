@@ -1,31 +1,46 @@
-:- include('helper.pl').
+:- include('fact.pl').
 
 /*Deklarasi Fakta*/
 :- dynamic(gameRun/1).     %gameRun(Status)
 :- dynamic(playerName/1).  %playerName(Player)
-:- dynamic(playerCount/1). %playerCount(Count).
-:- dynamic(listPlayer/1). %listPlayer(List).
-:- dynamic(listUrutan/1). %ListUrutan(List).
+:- dynamic(playerCount/1). %playerCount(Count)
+:- dynamic(listPlayer/1). %listPlayer(List)
+:- dynamic(listUrutan/1). %listUrutan(List)
+:- dynamic(listKartu/1). %listKartu(List)
 
 /* Input jumlah pemain dengan batasan */
-
 startGame:-
+    initdeck,
+    retractall(kartuTop(_,_)),
+    retractall(listKartu(_)),
+    retractall(kartu_diTangan(_,_)),
     retractall(listUrutan(_)),
     retractall(listPlayer(_)),
     retractall(playerName(_)),
     retractall(playerCount(_)),
     assertz(gameRun(true)),
-    inputPemain.
+    inputPemain,
+    !.
 
 inputPemain:-
     write('Masukkan jumlah pemain: '),
     read(JumlahPemain),
+    checkValidInput(JumlahPemain),
     hitungPemain(JumlahPemain).
+
+checkValidInput(JumlahPemain):-
+    \+integer(JumlahPemain) ->(
+    write('Mohon masukkan angka antara 2-4.'),
+    nl,
+    inputPemain);
+    !.
 
 hitungPemain(JumlahPemain):-
     JumlahPemain >= 2,
     JumlahPemain =< 4,
     assertz(playerCount(JumlahPemain)),
+    nl,
+    nl,
     pemainCounter(JumlahPemain, 0).
 
 hitungPemain(JumlahPemain):-
@@ -38,6 +53,7 @@ hitungPemain(JumlahPemain):-
 /* Menghitung jumlah pemain untuk input data */
 
 pemainCounter(Number,Number):-
+    nl,
     write('Urutan pemain: '),
     playerCount(Jumlah),
     findAllPemain(Jumlah,0,[]),
@@ -82,16 +98,13 @@ findAllPemain(Jumlah,X,List):-
 
 /* Cek format nama agar pasti didahului kapital */
 formatInvalid(N):-
-    write('Input nama tidak valid! Masukkan nama dengan benar : '),
+    write('Nama harus mengandung huruf! Masukkan nama dengan benar : '),
     read(NamaLain),
     cekFormatNama(NamaLain,N).
 
 cekFormatNama(Nama,N):-
-    atom_codes(Nama, [Huruf|_]),
-    (Huruf >= 65,
-    Huruf =< 90) ->
-    (
-    findAllPemain(N,0,[]),
+    \+integer(Nama) ->
+    (findAllPemain(N,0,[]),
     listPlayer(List),
     list_length(List,Len),
     findNama(Nama,List,Len) ->
@@ -118,59 +131,81 @@ randomMember(List,Player,Idx):-
     random(0,Len,Idx),
     get_index(List,Idx,Player).
 
+randomUrutan(Number, Number, List, ListUrutan):-
+    randomMember(List,Player,Idx),
+    append(ListUrutan, Player, ResList),
+    write(Player),
+    write('.'),
+    assertz(listUrutan(ResList)),
+    nl,
+    nl,
+    bagiDeck,
+    !.
+
 randomUrutan(Number, N, List, ListUrutan):-
     N < Number,
     !,
     randomMember(List,Player,Idx),
-    append_element(ListUrutan, [Player], ResList),
+    append_element(ListUrutan, Player, ResList),
     write(Player),
     write(' - '),
     delete_element(List,Idx,NewList),
     N1 is N + 1,
     randomUrutan(Number, N1, NewList, ResList).
 
-randomUrutan(Number, Number, List, ListUrutan):-
-    randomMember(Member, List),
-    append(ListUrutan, [Member], ResList),
-    write(Member),
-    write('.'),
-    assertz(listUrutan(ResList)),
-    nl,
-    nl,
-    !.
-
 /* Pembagian Kartu */
 
-/*initListAwal(Number, Number, _):- !.
+ambilKartuAwal(0,NewList,_):-
+    assertz(listKartu(NewList)),
+    !.
 
-initListAwal(Number, N, ListUrutan):-   N < Number,
-                                        nth0(N, ListUrutan, Nama),    
-                                        assertz(kartu_diTangan(Nama, [])),
-                                        N1 is N + 1,
-                                        initListAwal(Number, N1, ListUrutan).
+ambilKartuAwal(N,List,Deck):-
+    random(0,54,Index),
+    get_index(Deck,Index,Kartu),
+    append_element(List,Kartu,NewList),
+    N1 is N - 1,
+    ambilKartuAwal(N1,NewList,Deck).
 
-initDeckPemain(Number, Number, _, _, _).
+bagiKartu(Jumlah,Jumlah,Deck,CurrentPlayer):-
+    ambilKartuAwal(7,[],Deck),
+    listKartu(DeckPlayer),
+    assertz(kartu_diTangan(CurrentPlayer,DeckPlayer)),
+    retractall(listKartu(_)),
+    !.
 
-initDeckPemain(Number, Number, 7, ListUrutan, FullDeck):-   N < Number,
-                                                            nth0(N, ListUrutan, Nama),
-                                                            pembagianAwal(Nama, FullDeck),
-                                                            N1 is N + 1
-                                                            initDeckPemain(Number, N1, 1, ListUrutan).
+bagiKartu(Jumlah,X,Deck,ListPlayer):-
+    get_index(ListPlayer,0,CurrentPlayer),
+    delete_element(ListPlayer,0,NewPlayerList),
+    ambilKartuAwal(7,[],Deck),
+    listKartu(DeckPlayer),
+    assertz(kartu_diTangan(CurrentPlayer,DeckPlayer)),
+    retractall(listKartu(_)),
+    X1 is X + 1,
+    bagiKartu(Jumlah,X1,Deck,NewPlayerList).
 
-initDeckPemain(Number, N, NumRand, ListUrutan, FullDeck):-  N < Number,
-                                                            nth0(N, ListUrutan, Nama),
-                                                            pembagianAwal(Nama, FullDeck),
-                                                            NextCard is NumRand + 1,
-                                                            initDeckPemain(Number, N, NextCard, ListUrutan).
+bagiDeck:-
+    fullDeck(Deck),
+    listUrutan(ListPlayer),
+    playerCount(Jumlah),
+    bagiKartu(Jumlah,1,Deck,ListPlayer),
+    write('Setiap pemain mendapatkan 7 kartu acak.'),
+    nl,
+    nl,
+    discardFirst(Deck).
 
-pembagianAwal(Nama, FullDeck):- randomCard(FullDeck, ChosenCard),
-                                retract(kartu_diTangan(Nama, ListLama)),
-                                assertz(Nama, [ChosenCard|ListLama]).
+discardFirst(Deck):-
+    random(0,54,Index),
+    get_index(Deck,Index,Kartu),
+    write('Kartu discard top: '),
+    write(Kartu),
+    write('.'),
+    nl,
+    nl,
+    firstTurn.
 
-afterPembagian(ListUrutan):-    write('Setiap pemain mendapatkan 7 kartu acak.'),
-                                nl,
-                                nl,
-                                nth0(0, ListUrutan, Pemain),
-                                write('Giliran '),
-                                write(Pemain).*/
-                            
+firstTurn:-
+    listUrutan(Urutan),
+    get_index(Urutan,0,FirstPlayer),
+    write('Giliran '),
+    write(FirstPlayer),
+    write('.').                  
