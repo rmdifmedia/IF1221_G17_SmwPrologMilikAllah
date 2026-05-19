@@ -205,20 +205,3 @@ mainkanKartu(Number):-
         )
 
     ).
-    
-/*listUni :-
-        findall(Nama, pemain(Nama), ListUNI).
-
-    tambahOrangUni(Nama) :-
-        assertz(pemain(Nama)).
-
-    uni(Number) :-
-        turn(Pemain),
-        kartu_diTangan(Pemain, ListKartu),
-        member(Kartu, ListKartu), 
-        isKartuValid(Kartu),
-        length(ListKartu, Length),
-        Length =:= 2,
-        mainkanKartu(Number),
-        append(ListUNI, Pemain)
-*/
