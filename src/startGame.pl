@@ -1,36 +1,54 @@
-//:- include('fact.pl').//
+:- include('helper.pl').
+
+/*Deklarasi Fakta*/
+:- dynamic(gameRun/1).     %gameRun(Status)
+:- dynamic(playerName/1).  %playerName(Player)
+:- dynamic(playerCount/1). %playerCount(Count).
+:- dynamic(listPlayer/1). %listPlayer(List).
+:- dynamic(listUrutan/1). %ListUrutan(List).
 
 /* Input jumlah pemain dengan batasan */
 
-startGame:- write('Masukkan jumlah pemain: '),
-            read(Number),
-            hitungPemain(Number),
-            nl,
-            !,
-            pemainCounter(Number,0),
-            initdeck.
+startGame:-
+    retractall(listUrutan(_)),
+    retractall(listPlayer(_)),
+    retractall(playerName(_)),
+    retractall(playerCount(_)),
+    assertz(gameRun(true)),
+    inputPemain.
 
-hitungPemain(Number):-  (Number < 2;
-                        Number > 4),
-                        write('Mohon masukkan angka antara 2-4.'),
-                        nl,
-                        startGame.
+inputPemain:-
+    write('Masukkan jumlah pemain: '),
+    read(JumlahPemain),
+    hitungPemain(JumlahPemain).
 
-hitungPemain(Number):-  Number >= 2,
-                        Number =< 4,
-                        !.
+hitungPemain(JumlahPemain):-
+    JumlahPemain >= 2,
+    JumlahPemain =< 4,
+    assertz(playerCount(JumlahPemain)),
+    pemainCounter(JumlahPemain, 0).
+
+hitungPemain(JumlahPemain):-
+    (JumlahPemain < 2;
+    JumlahPemain > 4),
+    write('Mohon masukkan angka antara 2-4.'),
+    nl,
+    inputPemain.
 
 /* Menghitung jumlah pemain untuk input data */
-pemainCounter(Number, N):-  N < Number,
-                            !,
-                            N1 is N + 1,
-                            namaPemain(N1),
-                            pemainCounter(Number, N1).
 
-pemainCounter(Number, Number):- !,
-                                write('Urutan pemain: '),
-                                cekSemuaNama(List),
-                                randomUrutan(Number, 1, List, []).
+pemainCounter(Number,Number):-
+    write('Urutan pemain: '),
+    playerCount(Jumlah),
+    findAllPemain(Jumlah,0,[]),
+    listPlayer(List),
+    randomUrutan(Number, 1, List, []).
+
+pemainCounter(Number, N):-
+    N < Number,
+    N1 is N + 1,
+    namaPemain(N1),
+    pemainCounter(Number, N1).
 
 /* Input data pemain yang valid */
 inputDataPemain(Nama):- open('dataNama.txt', append, N),
@@ -39,88 +57,87 @@ inputDataPemain(Nama):- open('dataNama.txt', append, N),
                         nl(N),
                         close(N).
 
-/* Memastikan nama pemain unik (Tidak ada di list) */
-cekSemuaNama(ListNama):-    open('dataNama.txt', read, Stream),
-                            namaStream(Stream, ListNama),
-                            close(Stream).
+findNama(Nama,_,0):-
+    retract(playerName(Nama)),
+    !.
 
-namaStream(Stream, []):- at_end_of_stream(Stream),
-                         !.
+findNama(Nama,[NamaAwal|Tail],N):-
+    N1 is N - 1,
+    (Nama == NamaAwal ->
+    !;
+    findNama(Nama,Tail,N1)).
 
-namaStream(Stream, [Nama|R]):-  \+at_end_of_stream(Stream),
-                                read_term(Stream, Nama, []),
-                                Nama \== end_of_file,
-                                !,
-                                namaStream(Stream, R).
+findAllPemain(Jumlah,Jumlah,_):-
+    !.
 
-namaStream(_,[]).
-
-cekListNama(Nama):- cekSemuaNama(ListNama),
-                    member(Nama, ListNama).
+findAllPemain(Jumlah,X,List):-
+    playerName(Nama),
+    append_element(List,Nama,NewList),
+    retract(playerName(Nama)),
+    X1 is X + 1,
+    retractall(listPlayer(_)),
+    assertz(listPlayer(NewList)),
+    findAllPemain(Jumlah,X1,NewList),
+    assertz(playerName(Nama)).
 
 /* Cek format nama agar pasti didahului kapital */
-cekFormatNama(Nama):-   atom_codes(Nama, [Huruf|_]),
-                        Huruf >= 65,
-                        Huruf =< 90,
-                        !,
-                        (
-                        cekListNama(Nama) ->
-                        (write('Nama sudah digunakan. Masukkan nama lain : '),
-                        read(NamaLain),
-                        cekFormatNama(NamaLain));
-                        inputDataPemain(Nama)
-                        ).
-                        
+formatInvalid(N):-
+    write('Input nama tidak valid! Masukkan nama dengan benar : '),
+    read(NamaLain),
+    cekFormatNama(NamaLain,N).
 
-cekFormatNama(_):-  write('Input nama tidak valid! Masukkan nama dengan benar : '),
-                    read(NamaLain),
-                    cekFormatNama(NamaLain).
+cekFormatNama(Nama,N):-
+    atom_codes(Nama, [Huruf|_]),
+    (Huruf >= 65,
+    Huruf =< 90) ->
+    (
+    findAllPemain(N,0,[]),
+    listPlayer(List),
+    list_length(List,Len),
+    findNama(Nama,List,Len) ->
+    (write('Nama sudah digunakan. Masukkan nama lain : '),
+    read(NamaLain),
+    cekFormatNama(NamaLain,N));
+    assertz(playerName(Nama)),
+    !);
+    formatInvalid(N).
 
 /* Prompt meminta nama pemain */
-namaPemain(N):- write('Masukkan nama pemain '),
-                write(N),
-                write(' : '),
-                read(Nama),
-                (cekFormatNama(Nama) -> true;
-                namaPemain(N)).
-
-/* Simpan data pemain */
-inputUrutan(Member):-   open('dataUrutan.txt', append, Urutan),
-                        writeq(Urutan, Member),
-                        write(Urutan, '.'),
-                        nl(Urutan),
-                        close(Urutan).
-
-/* Pilih random dari list */
-randomMember(Member, List):-    length(List, Len),
-                                random(0, Len, Index),
-                                nth0(Index, List, Member).
+namaPemain(N):-
+    write('Masukkan nama pemain '),
+    write(N),
+    write(' : '),
+    read(Nama),
+    N1 is N - 1,
+    cekFormatNama(Nama,N1).
 
 /* Urutan Random Pemain */
 
-randomUrutan(Number, N, List, ListUrutan):- N < Number,
-                                            !,
-                                            randomMember(Member, List),
-                                            append(ListUrutan, [Member], ResList),
-                                            inputUrutan(Member),
-                                            write(Member),
-                                            write(' - '),
-                                            delete(List, Member, NewList),
-                                            N1 is N + 1,
-                                            randomUrutan(Number, N1, NewList, ResList).
+randomMember(List,Player,Idx):-
+    list_length(List,Len),
+    random(0,Len,Idx),
+    get_index(List,Idx,Player).
 
-randomUrutan(Number, Number, List, ListUrutan):-    randomMember(Member, List),
-                                                    append(ListUrutan, [Member], ResList),
-                                                    inputUrutan(Member),
-                                                    write(Member),
-                                                    write('.'),
-                                                    nl,
-                                                    nl,
-                                                    //createDeck(FullDeck), //
-                                                    /*initListAwal(Number, 0, ResList),
-                                                    initDeckPemain(Number, 0, 1, ResList, FullDeck),
-                                                    afterPembagian(ResList),*/
-                                                    !.
+randomUrutan(Number, N, List, ListUrutan):-
+    N < Number,
+    !,
+    randomMember(List,Player,Idx),
+    append_element(ListUrutan, [Player], ResList),
+    write(Player),
+    write(' - '),
+    delete_element(List,Idx,NewList),
+    N1 is N + 1,
+    randomUrutan(Number, N1, NewList, ResList).
+
+randomUrutan(Number, Number, List, ListUrutan):-
+    randomMember(Member, List),
+    append(ListUrutan, [Member], ResList),
+    write(Member),
+    write('.'),
+    assertz(listUrutan(ResList)),
+    nl,
+    nl,
+    !.
 
 /* Pembagian Kartu */
 
