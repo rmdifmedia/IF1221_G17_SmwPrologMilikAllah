@@ -133,8 +133,8 @@ mainkanKartu(Number):-
         )
 
     ).
-
-    /*listUni :-
+    
+/*listUni :-
         findall(Nama, pemain(Nama), ListUNI).
 
     tambahOrangUni(Nama) :-
@@ -148,4 +148,5 @@ mainkanKartu(Number):-
         length(ListKartu, Length),
         Length =:= 2,
         mainkanKartu(Number),
-        append(ListUNI, Pemain)*/
+        append(ListUNI, Pemain)
+*/
