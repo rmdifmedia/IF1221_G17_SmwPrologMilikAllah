@@ -2,13 +2,18 @@
 :- dynamic(kartu/2).
 
 /* fungsi helper mengambil besaran poin tiap kartu*/
-poinCard(kartu(_,N), N):-
-    N >= 0,
-    N <= 9.
+poinCard(kartu(W,N), N):-
+    integer(N),
+    warna(W),
+    N>=0,
+    N=<9.
 
-poinCard(kartu(_,skip), 10).
-poinCard(kartu(_,jreverse), 10).
-poinCard(kartu(_,drawtwo), 10).
+poinCard(kartu( W,skip), 10):-
+    warna(W).
+poinCard(kartu(W,jreverse), 10):-
+    warna(W).
+poinCard(kartu(W,drawtwo), 10):-
+    warna(W).
 
 poinCard(kartu(hitam, wild), 20).
 poinCard(kartu(hitam, drawfour), 20).
@@ -23,11 +28,11 @@ hitungSkor([KartuPlayer|Tail], TotalPoin, SisaKartu):-
 
 /* fungsi helper untuk menghitung stats tiap player*/
 statsAllPlayer([], _, []):- !.
-statsAllPlayer([Nama|PemainTail], Giliran, [statsPlayer(Nama, Poin, Sisa, Giliran)|statsPlayerTail]):-
+statsAllPlayer([Nama|PemainTail], Giliran, [statsPlayer(Nama, Poin, Sisa, Giliran)|StatsPlayerTail]):-
     kartu_diTangan(Nama, ListCard),
     hitungSkor(ListCard, Poin, Sisa),
     NxGiliran is Giliran + 1,
-    statsAllPlayer(PemainTail, NxGiliran, statsPlayerTail).
+    statsAllPlayer(PemainTail, NxGiliran, StatsPlayerTail).
 
 /* fungsi helper mengurutkan pemenang*/
 higherRank(statsPlayer(_,P1,_,_), statsPlayer(_,P2,_,_)) :-
@@ -70,6 +75,7 @@ printSkor([kartu(W,J)]):-
 printSkor([kartu(W,J)|T]) :-
     poinCard(kartu(W,J), V),
     write(V),
+    write(' + '),
     printSkor(T).
 
 printKartu([]):-
@@ -85,6 +91,7 @@ printKartu([kartu(W,J)|T]) :-
     write(W), 
     write('-'),
     write(J),
+    write(' + '),
     printKartu(T).
 
 print_details([]).
@@ -102,14 +109,27 @@ printRank([statsPlayer(Nama, Poin, _, _)|Tail], Rank) :-
     format('~w. ~w (~w poin)~n', [Rank, Nama, Poin]),
     NextRank is Rank + 1,
     printRank(Tail, NextRank).
-   
-endgame:-
+
+
+/* dummy fakta*/
+warna(merah).
+warna(kuning).
+warna(hijau).
+warna(biru).
+
+/*dummy*/
+urutanPemain(['Raya', 'Sisi']).
+kartu_diTangan('Raya', [kartu(merah,9), kartu(hitam, wild), kartu(hijau, 1), kartu(biru,skip)]).
+kartu_diTangan('Sisi', []).
+
+
+endGame:-
     urutanPemain(ListUrutan),
     statsAllPlayer(ListUrutan, 1, HasilStats),
     insert_sort(HasilStats, SortedUrutan),
-    kartu_diTangan(Pemenang, []), !,
-    format('Permainan selesai! Selamat ~w memenangkan permainan', [Pemenang]),
-    write('Berikut perhitungan poin sisa kartu'),
+    kartu_diTangan(Pemenang, []),
+    format('Permainan selesai! Selamat ~w memenangkan permainan', [Pemenang]), nl,
+    write('Berikut perhitungan poin sisa kartu:'), nl,
     print_details(ListUrutan), nl,
     write('Urutan Pemenang :'), nl,
     printRank(SortedUrutan, 1), nl.

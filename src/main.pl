@@ -1,7 +1,7 @@
 :- include('player.pl').
 :- include('fact.pl').
 :- include('startGame.pl').
-:- initialization(main).
+:- initialization(main, main).
 
 main :-
     format('>> New Game ~n >> Load Game ~n Ketik Opsi: ', []),
