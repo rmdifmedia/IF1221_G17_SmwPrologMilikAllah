@@ -1,5 +1,3 @@
-:- include('helper.pl').
-
 :- dynamic(kartu/2).
 :- dynamic(kartuTop/2).
 :- dynamic(kartu_diTangan/2).
@@ -114,7 +112,7 @@ efekKartu(_, skip):-
 efekKartu(_, N) :-
     number(N), nextTurn.
 
-efekKartu(_, jreverse) :- 
+efekKartu(_, reverse) :- 
     reverseUrutan, nextTurn.
 
 efekKartu(hitam, wild) :-

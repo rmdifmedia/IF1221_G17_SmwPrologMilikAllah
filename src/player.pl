@@ -45,7 +45,7 @@ aksi_utama_tersedia(Pemain, uni) :-
     kartu_diTangan(Pemain, ListKartu),
     member(Kartu, ListKartu), 
     isKartuValid(Kartu),
-    length(ListKartu, Length),
+    list_length(ListKartu, Length),
     Length =:= 2.
 
 /*aksi_utama_tersedia(Pemain, tangkap) :-
@@ -57,9 +57,10 @@ aksi_utama_tersedia(Pemain, mainkanKartu) :-
     member(Kartu, ListKartu), 
     isKartuValid(Kartu), !.
 
-printNomor(_, []).
+printNomor(_, []):-
+    !.
 printNomor(N, [H|T]) :-
-    format('~w, ~w~n', [N, H]),
+    format('~w. ~w~n', [N, H]),
     N1 is N + 1,
     printNomor(N1, T).
 
@@ -73,9 +74,10 @@ lihatCommand :-
         printNomor(1, [lihatCommand, lihatKartu, cekInfo]).
 
 
-printKartu(_, []).
-printKartu(N, [kartu(Warna, Jenis) | T] ) :-
-    format('~w. ~w-~w~n', [N, Warna, Jenis]),
+printKartu(_, []):-
+    !.
+printKartu(N, [Kartu| T] ) :-
+    format('~w. ~w~n', [N,Kartu]),
     N1 is N + 1,
     printKartu(N1, T).
 
@@ -96,6 +98,7 @@ info_pemain(FullList, [Nama|Tail]) :-
     find_index(FullList, Index, Nama),
     kartu_diTangan(Nama, ListKartu),
     list_length(ListKartu, Jum),
+<<<<<<< HEAD
     format('Nama pemain ~d: ~w~nJumlah kartu: ~d~n', [Index+1,Nama,Jum]), nl,
     info_pemain(FullList, Tail).
 
@@ -108,6 +111,16 @@ print_Urutan([Nama|T]):-
     write(Nama),
     write(' - '),
     print_Urutan(T).
+=======
+    format('Nama pemain ~d: ~w~n Jumlah kartu: ~d~n', [Index,Nama,Jum]),
+    info_pemain(FullList, Tail).
+
+/*get_index([Element|_], 1, Element).
+get_index([_|Tail], Index, Element) :-
+    Index > 1,
+    Newindex is Index-1,
+    get_index(Tail, NewIndex, Element).*/
+>>>>>>> Nadia
 
 
 cekInfo :-
