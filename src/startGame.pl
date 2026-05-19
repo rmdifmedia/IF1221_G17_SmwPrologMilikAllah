@@ -20,7 +20,15 @@ startGame:-
 inputPemain:-
     write('Masukkan jumlah pemain: '),
     read(JumlahPemain),
+    checkValidInput(JumlahPemain),
     hitungPemain(JumlahPemain).
+
+checkValidInput(JumlahPemain):-
+    \+integer(JumlahPemain) ->(
+    write('Mohon masukkan angka antara 2-4.'),
+    nl,
+    inputPemain);
+    !.
 
 hitungPemain(JumlahPemain):-
     JumlahPemain >= 2,
@@ -118,6 +126,16 @@ randomMember(List,Player,Idx):-
     random(0,Len,Idx),
     get_index(List,Idx,Player).
 
+randomUrutan(Number, Number, List, ListUrutan):-
+    randomMember(List,Player,Idx),
+    append(ListUrutan, [Member], ResList),
+    write(Member),
+    write('.'),
+    assertz(listUrutan(ResList)),
+    nl,
+    nl,
+    !.
+
 randomUrutan(Number, N, List, ListUrutan):-
     N < Number,
     !,
@@ -128,16 +146,6 @@ randomUrutan(Number, N, List, ListUrutan):-
     delete_element(List,Idx,NewList),
     N1 is N + 1,
     randomUrutan(Number, N1, NewList, ResList).
-
-randomUrutan(Number, Number, List, ListUrutan):-
-    randomMember(Member, List),
-    append(ListUrutan, [Member], ResList),
-    write(Member),
-    write('.'),
-    assertz(listUrutan(ResList)),
-    nl,
-    nl,
-    !.
 
 /* Pembagian Kartu */
 
