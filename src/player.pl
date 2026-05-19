@@ -80,7 +80,7 @@ printKartu(N, [kartu(Warna, Jenis) | T] ) :-
     printKartu(N1, T).
 
 lihatKartu :-
-  giliran(Pemain), 
+  turn(Pemain), 
         write('Berikut kartu yang anda miliki.'), nl,
         (   kartu_diTangan(Pemain, ListKartu)
         ->  printKartu(1, ListKartu)
