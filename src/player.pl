@@ -9,23 +9,22 @@ nextTurn :-
     turn(Nama),
     arah(Arah),
     playerCount(Jumlah),
-
-    get_element(ListUrutan, Index, Nama),
+    listUrutan(ListUrutan),
+    get_index_of(ListUrutan, Nama, Index),  % cari index dari Nama
     (Arah = kanan
     -> Next is (Index+1) mod Jumlah
     ; Next is (Index-1) mod Jumlah),
-
-    get_index(ListUrutan, Next, NamaNext),
+    get_index(ListUrutan, Next, NamaNext),  % cari nama dari index
     retract(turn(_)),
-    assert(turn(NamaNext)).
+    assertz(turn(NamaNext)).
 
 reverseUrutan :-
     (
         arah(kanan)
         -> retract(arah(kanan)),
-            assert(arah(kiri))
+            assertz(arah(kiri))
         ; retract(arah(kiri)),
-        assert(arah(kanan)) 
+        assertz(arah(kanan)) 
     ).
 
 aksiUtama(Pemain, AksUtamaList) :-

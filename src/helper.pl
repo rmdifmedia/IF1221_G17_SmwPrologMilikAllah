@@ -35,7 +35,13 @@ delete_element([Head|Tail],Index,[Head|UpdatedTail]):-
 /* Mengambil Element dari Indeks tertentu*/
 get_element([_|Tail], Index, Element):-
 	Index > 0,
-	NewIdx is Index - 1;
+	NewIdx is Index - 1,
 	get_element(Tail, NewIdx, Element).
 get_element([Element|_], 0, Element).
+
+get_index_of([Element|_], Element, 0).
+get_index_of([Head|Tail], Element, Index) :-
+    Head \== Element,
+    get_index_of(Tail, Element, Index1),
+    Index is Index1 + 1.
 

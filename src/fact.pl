@@ -1,3 +1,5 @@
+:- include('helper.pl').
+:- include('player.pl').
 :- dynamic(kartu/2).
 :- dynamic(kartuTop/2).
 :- dynamic(kartu_diTangan/2).
@@ -8,7 +10,7 @@
 
 setWarna(W):-
     retractall(currColor(_)),
-    assert(currColor(W)).
+    assertz(currColor(W)).
 
 /* Deklarasi Fakta */
 warna(merah).
@@ -114,7 +116,7 @@ removeCard(X, [H|T], [H|Terhapus]):-
 
 setDiscardTop(kartu(W,J)):-
     retractall(kartuTop(_,_)),
-    assert(kartuTop(W,J)),
+    assertz(kartuTop(W,J)),
     setWarna(W).
 
 mainkanKartu(Number):-
@@ -124,13 +126,13 @@ mainkanKartu(Number):-
     ( isKartuValid(ChosenCard)
     ->  removeCard(ChosenCard, ListKartu, Updated),
         retract(kartu_diTangan(Nama, ListKartu)),
-        assertz(kartu_diTangan(Nama, Updated)),
+        assertz(kartu_diTangan(Nama, Updated)), !,
         ChosenCard = kartu(W,J),
         setDiscardTop(ChosenCard),
         efekKartu(W,J)
     
-    ;   write("Duhh... Kartunya gak sesuai nich!"), nl,
-        write("Kamu bisa menginput ulang kartu atau ketik 'Cancel' jika tidak ingin memainkan kartu :D"), nl,
+    ;   write('Duhh... Kartunya gak sesuai nich!'), nl,
+        write('Kamu bisa menginput ulang kartu atau ketik Cancel jika tidak ingin memainkan kartu :D'), nl,
         read(Ans),
         (
             Ans == 'Cancel'
@@ -159,3 +161,19 @@ tantang :-
     ), 
     retractall(listTantang(_)),  
     assertz(listTantang([])).
+
+initDummy :-
+    retractall(listUrutan(_)),
+    retractall(kartu_diTangan(_,_)),
+    retractall(turn(_)),
+    retractall(kartuTop(_,_)),
+    retractall(arah(_)),
+    retractall(playerCount(_)),
+    assertz(listUrutan(['Raya', 'Sisi'])),
+    assertz(kartu_diTangan('Raya', [kartu(merah,9), kartu(hitam,wild), kartu(hijau,1), kartu(biru,skip)])),
+    assertz(kartu_diTangan('Sisi', [kartu(hitam,drawfour), kartu(hijau,3), kartu(biru,jreverse)])),
+    assertz(turn('Sisi')),
+    assertz(kartuTop(hijau, 5)),
+    assertz(arah(kanan)),
+    assertz(playerCount(2)),
+    initdeck.
