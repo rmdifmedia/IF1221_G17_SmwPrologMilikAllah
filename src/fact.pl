@@ -193,8 +193,8 @@ mainkanKartu(Number):-
         setDiscardTop(ChosenCard),
         efekKartu(W,J)
     
-    ;   write("Duhh... Kartunya gak sesuai nich!"), nl,
-        write("Kamu bisa menginput ulang kartu atau ketik 'Cancel' jika tidak ingin memainkan kartu :D"), nl,
+    ;   write('Duhh... Kartunya gak sesuai nich!'), nl,
+        write('Kamu bisa menginput ulang kartu atau ketik "Cancel" jika tidak ingin memainkan kartu :D'), nl,
         read(Ans),
         (
             Ans == 'Cancel'

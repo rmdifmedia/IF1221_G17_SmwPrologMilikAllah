@@ -1,6 +1,3 @@
-:- include('player.pl').
-:- include('fact.pl').
-
 /* KONDISI SUCCESS UNTUK TEST RUN INDIVIDU UNI.PL:
 - fact.pl diberi inilization(initdeck).
 - fact.pl include helper.pl saja

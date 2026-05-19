@@ -63,7 +63,8 @@ aksi_utama_tersedia(Pemain, mainkanKartu) :-
     member(Kartu, ListKartu), 
     isKartuValid(Kartu), !.
 
-printNomor(_, []).
+printNomor(_, []):-
+    !.
 printNomor(N, [H|T]) :-
     format('~w. ~w~n', [N, H]),
     N1 is N + 1,
@@ -79,7 +80,8 @@ lihatCommand :-
         printNomor(1, [lihatCommand, lihatKartu, cekInfo]).
 
 
-printKartu(_, []).
+printKartu(_, []):-
+    !.
 printKartu(N, [Kartu | T] ) :-
     format('~w. ~w~n', [N, Kartu]),
     N1 is N + 1,
@@ -104,12 +106,6 @@ info_pemain(FullList, [Nama|Tail]) :-
     length(ListKartu, Jum),
     format('Nama pemain ~d: ~w~n Jumlah kartu: ~d~n', [Index,Nama,Jum]),
     info_pemain(FullList, Tail).
-
-get_index([Element|_], 1, Element).
-get_index([_|Tail], Index, Element) :-
-    Index > 1,
-    Newindex is Index-1,
-    get_index(Tail, NewIndex, Element).
 
 listPemain(ListPemain) :-
     open('dataNama.txt', read, Stream),
