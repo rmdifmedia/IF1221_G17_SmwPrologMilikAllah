@@ -1,7 +1,28 @@
+:- include('fact.pl').
+:- include('player.pl').
+
+/* Helper */
+
+
 /* List UNI */
-:- dynamic listUni\1
+:- dynamic(listUni/1).
 
 listUni([]).
+
+filter_cardIsOne([], []).
+
+filter_cardIsOne([H|T], [H|TResult]):-
+    kartu_diTangan(H, ListKartu),
+    length(ListKartu, LenKartu),
+    LenKartu =:= 1,
+    filter_cardIsOne(T, TResult).
+
+filter_cardIsOne([H|T], TResult):- 
+    kartu_diTangan(H, ListKartu),
+    length(ListKartu, LenKartu),
+    \+ LenKartu =:= 1,
+    filter_cardIsOne(T, TResult).
+
 addListUni(Nama):-
     retract(ListNama(ListLama)),
     assertz(ListNama([Nama|ListLama])).
@@ -12,10 +33,11 @@ syarat_UNI(Nama):-
     Len =:= 1.
 
 updateListUni:-
-    ListUni(ListLama),
-    include(syarat_UNI, ListLama, ListBaru),
+    listUni(ListLama),
+    filter_cardIsOne(ListLama, ListBaru),
     retract(listUni(ListLama)),
-    assertz(llistUni(ListBaru)).
+    assertz(listUni(ListBaru)).
+
 
 /* Helper UNI */
 
@@ -30,29 +52,25 @@ uni(Number):-
     isKartuValid(Kartu),
     LenKartu =:= 2,
     mainkanKartu(Number),
-    format('~w menyerukan UNI!', [Pemain]), nl,
+    write(Pemain), write(' menyerukan UNI!'), nl,
     addListUni(Pemain),
     !.
 
 uni(Number):-
     turn(Pemain),
     kartu_diTangan(Pemain, ListKartu),
-    length (ListKartu, LenKartu),
+    length(ListKartu, LenKartu),
     (Number < 0 ; Number > LenKartu),
-    format('~w, masukin nomor yang bener. emng iya kamu punya ~d kartu.', [Pemain, Number]),
-    nl,
-    write("masukin nomor yang bener: "),
+    write('Nomor kartu tidak sesuai rentang jumlah kartu. Masukkan nomor kartu yang sesuai: '),
     read(NewNumber),
     uni(NewNumber).
 
 uni(Number):-
     turn(Pemain),
-    kartu__diTangan(Pemain, ListKartu),
+    kartu_diTangan(Pemain, ListKartu),
     getCard(ListKartu, Number, kartu(Warna, Jenis)),
     \+ isKartuValid(kartu(Warna, Jenis)),
-    format('no no ya dek ~w, gabisa pake kartu ~w ~w. Perhatiin lagi ya dek efek kartu sebelumnya ;)', [Pemain, Warna, Jenis]),
-    nl,
-    write("masukin nomor kartu yang sesuai: "),
+    write('Kartu tidak sesuai dengan efek sebelumnya. Masukkan kartu dengan efek yang sesuai: '),
     read(NewNumber),
     uni(NewNumber).
 
@@ -61,7 +79,7 @@ uni(Number):-
     kartu_diTangan(Pemain, ListKartu),
     length(ListKartu, LenKartu),
     \+ LenKartu =:= 2,
-    format('~w tidak memenuhi syarat perintah UNI!', [Pemain]), nl,
+    write(Pemain), write(' tidak memenuhi syarat perintah UNI!'), nl
     repeat_N_ambilKartu(1, AmbilKartu),
-    format('~w mendapat 1 kartu acak, kartu ~w ~w', [Pemain, Warna, Jenis]), nl,
+    write(Pemain), write(' mendapatkan 1 kartu acak.'), nl,
     nextTurn.
