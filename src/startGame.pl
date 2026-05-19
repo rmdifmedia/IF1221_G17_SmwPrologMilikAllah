@@ -1,5 +1,3 @@
-:- include('fact.pl').
-
 /*Deklarasi Fakta*/
 :- dynamic(gameRun/1).     %gameRun(Status)
 :- dynamic(playerName/1).  %playerName(Player)
@@ -133,7 +131,7 @@ randomMember(List,Player,Idx):-
 
 randomUrutan(Number, Number, List, ListUrutan):-
     randomMember(List,Player,Idx),
-    append(ListUrutan, Player, ResList),
+    append_element(ListUrutan, Player, ResList),
     write(Player),
     write('.'),
     assertz(listUrutan(ResList)),

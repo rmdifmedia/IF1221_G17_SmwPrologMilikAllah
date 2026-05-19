@@ -99,11 +99,11 @@ info_pemain(FullList, [Nama|Tail]) :-
     format('Nama pemain ~d: ~w~n Jumlah kartu: ~d~n', [Index,Nama,Jum]),
     info_pemain(FullList, Tail).
 
-get_index([Element|_], 1, Element).
+/*get_index([Element|_], 1, Element).
 get_index([_|Tail], Index, Element) :-
     Index > 1,
     Newindex is Index-1,
-    get_index(Tail, NewIndex, Element).
+    get_index(Tail, NewIndex, Element).*/
 
 listPemain(ListPemain) :-
     open('dataNama.txt', read, Stream),
