@@ -185,7 +185,7 @@ uni(Number):-
 
 uni(Number):-
     uni_Info(Pemain, ListKartu),
-    getCard(ListKartu, Number, Kartu),
+    get_index(ListKartu, Number, Kartu),
     \+ isKartuValid(Kartu),
     !,
     write('Kartu tidak sesuai dengan efek sebelumnya. Masukkan nomor kartu dengan efek yang sesuai: '),
@@ -198,7 +198,7 @@ uni(Number):-
     list_length(ListKartu, LenKartu),
     (Number > 0, (Number < LenKartu ; Number == LenKartu)),
     Number1 is Number - 1,
-    getCard(ListKartu, Number1, Kartu),
+    get_index(ListKartu, Number1, Kartu),
     isKartuValid(Kartu),
     LenKartu =:= 2,
     !,
