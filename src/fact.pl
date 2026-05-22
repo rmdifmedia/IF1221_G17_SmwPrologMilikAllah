@@ -195,6 +195,11 @@ isKartuValid(W,X):- /*kartu valid jenisnya sama*/
     \+ X == 'drawtwo',
     kartuTop(_,X).
 
+isKartuValid(W, drawtwo):-
+    \+ W == 'hitam',
+    kartuTop(_,J),
+    \+ J == 'drawtwo'.
+
 removeCard(_, [], []).
 removeCard(X, [X|T], T).
 removeCard(X, [H|T], [H|Terhapus]):-
