@@ -1,18 +1,12 @@
-:- include('helper.pl').
-
 :- dynamic(kartu/2).
 :- dynamic(kartuTop/2).
 :- dynamic(kartu_diTangan/2).
 :- dynamic(turn/1).
 :- dynamic(currColor/1).
 :- dynamic(deck/1).
-:- dynamic(listUrutan/1).
-:- include('player.pl').
-:- include('helper.pl').
-<<<<<<< HEAD
-=======
 :- dynamic(fullDeck/1).
->>>>>>> df5c297c91a35f703a1fab8143860c2159f14075
+:- dynamic(listTantang/1).
+:- dynamic(listHistoryTop/1).
 
 setWarna(W):-
     retractall(currColor(_)),
@@ -29,7 +23,8 @@ jenis(4). jenis(5). jenis(6). jenis(7). jenis(8).
 jenis(9).
 jenis(skip).
 jenis(reverse).
-jenis(drawtwo).
+jenis(draw_two).
+jenis(mimic).
 
 kartu(W, N) :- 
     warna(W),
@@ -48,7 +43,7 @@ kartu(merah,8).
 kartu(merah,9).
 kartu(merah,skip).
 kartu(merah,reverse).
-kartu(merah,drawtwo).
+kartu(merah,draw_two).
 kartu(kuning,0).
 kartu(kuning,1).
 kartu(kuning,2).
@@ -61,7 +56,7 @@ kartu(kuning,8).
 kartu(kuning,9).
 kartu(kuning,skip).
 kartu(kuning,reverse).
-kartu(kuning,drawtwo).
+kartu(kuning,draw_two).
 kartu(hijau,0).
 kartu(hijau,1).
 kartu(hijau,2).
@@ -74,7 +69,7 @@ kartu(hijau,8).
 kartu(hijau,9).
 kartu(hijau,skip).
 kartu(hijau,reverse).
-kartu(hijau,drawtwo).
+kartu(hijau,draw_two).
 kartu(biru,0).
 kartu(biru,1).
 kartu(biru,2).
@@ -87,9 +82,10 @@ kartu(biru,8).
 kartu(biru,9).
 kartu(biru,skip).
 kartu(biru,reverse).
-kartu(biru,drawtwo).
+kartu(biru,draw_two).
 kartu(hitam,wild).
-kartu(hitam,drawfour).
+kartu(hitam,wild_draw_four).
+kartu(hitam, mimic).
 
 :- initialization(initdeck).
 
@@ -117,7 +113,7 @@ efekKartu(_, skip):-
 efekKartu(_, N) :-
     number(N), nextTurn.
 
-efekKartu(_, jreverse) :- 
+efekKartu(_, reverse) :- 
     reverseUrutan, nextTurn.
 
 efekKartu(hitam, wild) :-
@@ -131,40 +127,104 @@ efekKartu(hitam, wild) :-
             efekKartu(hitam, wild)
     ).
 
-efekKartu(_, drawtwo) :-
+/*helper mengecek kartu aksi*/
+isKartuAksi(_,J):-
+    J == 'skip', !.
+isKartuAksi(_,J):-
+    J == 'draw_two', !.
+isKartuAksi(_,J):-
+    J == 'wild_draw_four', !.
+isKartuAksi(_,J):-
+    J == 'wild', !.
+
+cekListHitory(_, [], hitam, wild):-!.
+
+cekListHitory(N, [kartu(W, J)|Tail], W, J):-
+    isKartuAksi(W, J), !,
+    format('Kartu aksi yang terakhir dimainkan: ~w-~w (~w giliran lalu)', [W, J, N]), nl.
+
+cekListHitory(N, [kartu(_,_)|Tail], HistoryW, HistoryJ):-
+    N1 is N + 1,
+    cekListHitory(N1, Tail, HistoryW, HistoryJ).
+
+pilihwarnaLoop(WarnaBaru):-
+    write('Pilih warna: '), nl, 
+    read(WarnaInput),
+    (
+        warna(WarnaInput)
+    ->  setWarna(WarnaInput),
+        WarnaBaru = WarnaInput
+    ;   write('Warna tidak valid! Silahkan pilih warna lain :-D'), nl,
+        pilihwarnaLoop(WarnaBaru)
+    ). 
+
+
+efekKartu(hitam, mimic):-
+    write('Menulusuri riwayat permainan...'),
+    listHistoryTop(History),
+    cekListHitory(1, History, W, J),
+    format('Kartu mimic akan menyalin efek kartu ~w', [J]),
+    (
+        J == 'wild'
+    ->  efekKartu(hitam, wild)
+
+    ;   J \== 'wild_draw_four'
+    ->  efekKartu(hitam, wild_draw_four)
+
+    ;   pilihwarnaLoop(WarnaBaru),
+        efekKartu(WarnaBaru, J)
+    ).
+
+efekKartu(_, draw_two) :-
     nextTurn,
     repeat_N_ambilKartu(2, AmbilKartu),
     nextTurn.
 
-efekKartu(hitam, drawfour) :-
-    nextTurn,
-    repeat_N_ambilKartu(4, AmbilKartu),
+efekKartu(hitam, wild_draw_four) :-
+    turn(PrevPlayer),
+    write('Pilih Warna Aktif : '), nl,
+    read(WarnaAktif),
+    (
+        warna(WarnaAktif)
+        ->  setWarna(WarnaAktif)
+        ;   write('Warna tidak valid! Silahkan pilih warna lain :-D'), nl,
+            efekKartu(hitam, wild_draw_four)
+    ),
+    addListTantang(PrevPlayer),
     nextTurn.
 
+opsiDrawFour(1) :- 
+    repeat_N_ambilKartu(4),
+    nextTurn.
+
+opsiDrawFour(2) :-
+    tantang.
+
+listTantang([]).
+addListTantang(Nama):-
+    retract(listTantang(ListLama)),
+    assertz(listTantang([Nama|ListLama])).
+
 /* Helper */
-getCard([Card|_], 0, Card).
-getCard([_|Tail], Index, Card):-
-    Index > 0,
-    Newindex is Index - 1,
-    getCard(Tail, Newindex, Card).
 
 randomCard(ListKartu, ChosenKartu):-
     list_length(ListKartu, Len),
     random(0, Len, Idx),
-    getCard(ListKartu, Idx, ChosenKartu).
+    get_index(ListKartu, Idx, ChosenKartu).
 
 ambilCartu :-
-    deck(FullDeck),
-    randomCard(FullDeck, ChosenCard),
+    fullDeck(Deck),
+    randomCard(Deck,ChosenCard),
     turn(Nama),
     retract(kartu_diTangan(Nama, ListLama)),
     assertz(kartu_diTangan(Nama, [ChosenCard|ListLama])).
 
 ambilKartu :-
     repeat_N_ambilKartu(1, AmbilKartu),
-    nextTurn.
+    nextTurn,
+    !.
 
-repeat_N_ambilKartu(0, AmbilKartu):-!.
+repeat_N_ambilKartu(0, AmbilKartu):- !.
 repeat_N_ambilKartu(N, AmbilKartu):-
     N > 0,
     ambilCartu,
@@ -173,18 +233,23 @@ repeat_N_ambilKartu(N, AmbilKartu):-
 
 /* mainkanKartu */
 /* Helper */
-isKartuValid(kartu(W, J)) :-
+isKartuValid(W, J) :-
     \+ W == hitam,
     currColor(W).
-
-isKartuValid(kartu(hitam,_)).  /*kartu valid yaitu kartu wild*/
-isKartuValid(kartu(W,_)):- /*kartu valid warnanya sama*/
+isKartuValid(hitam,J):- /*kartu valid yaitu kartu wild*/
+    kartuTop(W,_),
+    W \== hitam.
+isKartuValid(W,_):- /*kartu valid warnanya sama*/
     kartuTop(W,_). 
-
-isKartuValid(kartu(W,X)):- /*kartu valid jenisnya sama*/
+isKartuValid(W,X):- /*kartu valid jenisnya sama*/
     \+ W == 'hitam',
-    \+ X == 'drawtwo',
+    \+ X == 'draw_two',
     kartuTop(_,X).
+
+isKartuValid(W, draw_two):-
+    \+ W == 'hitam',
+    kartuTop(_,J),
+    \+ J == 'draw_two'.
 
 removeCard(_, [], []).
 removeCard(X, [X|T], T).
@@ -192,39 +257,50 @@ removeCard(X, [H|T], [H|Terhapus]):-
     X\==H,
     removeCard(X,T,Terhapus).  
 
-setDiscardTop(kartu(W,J)):-
+setDiscardTop(W,J):-
+    riwayatKartuTop,
     retractall(kartuTop(_,_)),
     assertz(kartuTop(W,J)),
     setWarna(W).
 
-initDummy :-
-    retractall(listUrutan(_)),
-    retractall(kartu_diTangan(_,_)),
-    retractall(turn(_)),
-    retractall(kartuTop(_,_)),
-    retractall(arah(_)),
-    retractall(playerCount(_)),
-    assertz(listUrutan(['Raya', 'Sisi'])),
-    assertz(kartu_diTangan('Raya', [kartu(merah,9), kartu(hitam,wild), kartu(hijau,1), kartu(biru,skip)])),
-    assertz(kartu_diTangan('Sisi', [kartu(hitam,drawfour), kartu(hijau,3), kartu(biru,jreverse)])),
-    assertz(turn('Sisi')),
-    assertz(kartuTop(hijau, 5)),
-    assertz(arah(kanan)),
-    assertz(playerCount(2)),
-    initdeck.
+riwayatKartuTop:-
+    kartuTop(TopW, TopJ),
+    listHistoryTop(History),
+    append_elementFront(History, kartu(TopW, TopJ), NewHistory),
+    retractall(listHistoryTop(_)),
+    assertz(listHistoryTop(NewHistory)).
+
+tantang :-
+    turn(Pemain),
+    kartuTop(hitam,wild_draw_four),
+    currColor(WarnaAktif),
+    write("Tantangan Dilakukan!"), nl,
+    listTantang([PrevPemain|_]),
+    (member(kartu(WarnaAktif,_), ListKartu)
+    -> write("Tantangan Berhasil"), nl,
+    format("~w Mendapatkan 4 Kartu Acak...", [PrevPemain]), nl,
+    nextTurn, repeat_N_ambilKartu(4), nextTurn
+    ;
+    write("Tantangan Gagal"), nl,
+    format("~w Mendapatkan 6 Kartu Acak...", [Pemain]), nl,
+    repeat_N_ambilKartu(6), nextTurn
+    ), 
+    retractall(listTantang(_)),  
+    assertz(listTantang([])).
 
 mainkanKartu(Number):-
     turn(Nama),
     kartu_diTangan(Nama, ListKartu),
     listUrutan(ListPemain),
-    getCard(ListKartu, Number, ChosenCard),
-    ( isKartuValid(ChosenCard)
+    Index is Number - 1,
+    get_index(ListKartu, Index, ChosenCard),
+    get_index(ListKartu, Index, ChosenW-ChosenJ),
+    ( isKartuValid(ChosenW,ChosenJ)
     ->  removeCard(ChosenCard, ListKartu, Updated),
         retractall(kartu_diTangan(Nama, ListKartu)),
         assertz(kartu_diTangan(Nama, Updated)),
-        ChosenCard = kartu(W,J),
-        setDiscardTop(ChosenCard),
-        efekKartu(W,J)
+        setDiscardTop(ChosenW,ChosenJ),
+        efekKartu(ChosenW,ChosenJ)
     
     ;   write('Duhh... Kartunya gak sesuai nich!'), nl,
         write('Kamu bisa menginput ulang kartu atau ketik ''Cancel'' jika tidak ingin memainkan kartu :D'), nl,
@@ -238,20 +314,25 @@ mainkanKartu(Number):-
         )
 
     ), !.
-    
-/*listUni :-
-        findall(Nama, pemain(Nama), ListUNI).
 
-    tambahOrangUni(Nama) :-
-        assertz(pemain(Nama)).
 
-    uni(Number) :-
-        turn(Pemain),
-        kartu_diTangan(Pemain, ListKartu),
-        member(Kartu, ListKartu), 
-        isKartuValid(Kartu),
-        length(ListKartu, Length),
-        Length =:= 2,
-        mainkanKartu(Number),
-        append(ListUNI, Pemain)
+/*
+ initDummy :-
+    retractall(listUrutan(_)),
+    retractall(kartu_diTangan(_,_)),
+    retractall(turn(_)),
+    retractall(kartuTop(_,_)),
+    retractall(arah(_)),
+    retractall(playerCount(_)),
+    retractall(listHistoryTop(_)),
+    assertz(listUrutan(['Raya', 'Sisi'])),
+    assertz(kartu_diTangan('Raya', [kartu(merah,9), kartu(hitam,wild), kartu(hijau,1), kartu(biru,skip)])),
+    assertz(kartu_diTangan('Sisi', [kartu(hitam,wild_draw_four), kartu(hijau,3), kartu(biru,jreverse), kartu(hitam, mimic)])),
+    assertz(turn('Sisi')),
+    assertz(kartuTop(hijau, 5)),
+    assertz(arah(kanan)),
+    assertz(playerCount(2)),
+    assertz(listTantang([])).
+    initdeck.
+
 */
