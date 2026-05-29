@@ -9,6 +9,10 @@
 :- dynamic(listUrutan/1).
 :- include('player.pl').
 :- include('helper.pl').
+<<<<<<< HEAD
+=======
+:- dynamic(fullDeck/1).
+>>>>>>> df5c297c91a35f703a1fab8143860c2159f14075
 
 setWarna(W):-
     retractall(currColor(_)),
@@ -87,6 +91,8 @@ kartu(biru,drawtwo).
 kartu(hitam,wild).
 kartu(hitam,drawfour).
 
+:- initialization(initdeck).
+
 /* Deck Kartu Uni */
 findAllKartu(N,N,_).
 
@@ -143,7 +149,7 @@ getCard([_|Tail], Index, Card):-
     getCard(Tail, Newindex, Card).
 
 randomCard(ListKartu, ChosenKartu):-
-    length(ListKartu, Len),
+    list_length(ListKartu, Len),
     random(0, Len, Idx),
     getCard(ListKartu, Idx, ChosenKartu).
 
