@@ -5,6 +5,7 @@
 :- dynamic(playerCount/1). 
 :- dynamic(listUrutan/1). %ListUrutan(List).
 :- dynamic(arah/1).
+:- dynamic(currColor/1).
 
 nextTurn :- 
     turn(Nama),
@@ -112,7 +113,11 @@ print_Urutan([Nama|T]):-
 
 cekInfo :-
     kartuTop(Warna, Jenis),
-    format('Kartu discard top: ~w - ~w~n', [Warna, Jenis]), nl, 
+    format('Kartu discard top: ~w - ~w~n', [Warna, Jenis]), nl,
+    currColor(W),
+    format('Warna Aktif : ~w', [W]), nl,  
+    turn(Name),
+    format('Giliran : ~w', [Name]), nl, 
     listUrutan(ListPemain),
     write('Urutan Pemain : '), 
     print_Urutan(ListPemain), nl, 

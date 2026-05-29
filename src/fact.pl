@@ -106,27 +106,6 @@ initdeck :-
     findAllKartu(54,0,[]).
 
 /* Predikat */
-efekKartu(_, skip):-
-    nextTurn, 
-    nextTurn.
-
-efekKartu(_, N) :-
-    number(N), nextTurn.
-
-efekKartu(_, reverse) :- 
-    reverseUrutan, nextTurn.
-
-efekKartu(hitam, wild) :-
-    write('Pilih Warna Aktif : '), nl,
-    read(WarnaAktif),
-    (
-        warna(WarnaAktif)
-        ->  setWarna(WarnaAktif),
-            nextTurn
-        ;   write('Warna tidak valid! Silahkan pilih warna lain :-D'), nl,
-            efekKartu(hitam, wild)
-    ).
-
 /*helper mengecek kartu aksi*/
 isKartuAksi(_,J):-
     J == 'skip', !.
@@ -160,7 +139,7 @@ pilihwarnaLoop(WarnaBaru):-
 
 
 efekKartu(hitam, mimic):-
-    write('Menulusuri riwayat permainan...'),
+    write('Menulusuri riwayat permainan...'), nl,
     listHistoryTop(History),
     cekListHitory(1, History, W, J),
     format('Kartu mimic akan menyalin efek kartu ~w', [J]),
@@ -168,17 +147,38 @@ efekKartu(hitam, mimic):-
         J == 'wild'
     ->  efekKartu(hitam, wild)
 
-    ;   J \== 'wild_draw_four'
+    ;   J == 'wild_draw_four'
     ->  efekKartu(hitam, wild_draw_four)
 
     ;   pilihwarnaLoop(WarnaBaru),
         efekKartu(WarnaBaru, J)
-    ).
+    ), !.
+
+efekKartu(_, skip):-
+    nextTurn, 
+    nextTurn, !.
+
+efekKartu(_, N) :-
+    number(N), nextTurn, !.
+
+efekKartu(_, reverse) :- 
+    reverseUrutan, nextTurn, !.
+
+efekKartu(hitam, wild) :-
+    write('Pilih Warna Aktif : '), nl,
+    read(WarnaAktif),
+    (
+        warna(WarnaAktif)
+        ->  setWarna(WarnaAktif),
+            nextTurn
+        ;   write('Warna tidak valid! Silahkan pilih warna lain :-D'), nl,
+            efekKartu(hitam, wild)
+    ), !.
 
 efekKartu(_, draw_two) :-
     nextTurn,
     repeat_N_ambilKartu(2, AmbilKartu),
-    nextTurn.
+    nextTurn, !.
 
 efekKartu(hitam, wild_draw_four) :-
     turn(PrevPlayer),
@@ -191,7 +191,7 @@ efekKartu(hitam, wild_draw_four) :-
             efekKartu(hitam, wild_draw_four)
     ),
     addListTantang(PrevPlayer),
-    nextTurn.
+    nextTurn, !.
 
 opsiDrawFour(1) :- 
     repeat_N_ambilKartu(4),
@@ -332,7 +332,7 @@ mainkanKartu(Number):-
     assertz(kartuTop(hijau, 5)),
     assertz(arah(kanan)),
     assertz(playerCount(2)),
+    assertz(listHistoryTop([])),
     assertz(listTantang([])).
     initdeck.
-
 */
