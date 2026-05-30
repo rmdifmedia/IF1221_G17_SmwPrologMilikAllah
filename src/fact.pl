@@ -332,14 +332,14 @@ mainkanKartu(Number):-
         efekKartu(ChosenW,ChosenJ)
     
     ;   write('Duhh... Kartunya gak sesuai nich!'), nl,
-        write('Kamu bisa menginput ulang kartu atau ketik ''Cancel'' jika tidak ingin memainkan kartu :D'), nl,
+        format('Kamu bisa menginput ulang kartu atau ketik \'Cancel\' jika tidak ingin memainkan kartu :D~nKetik Opsi: ',[]), 
         read(Ans),
         (
             Ans == 'Cancel'
-            -> ambilKartu,
-                nextTurn
+            -> ambilKartu
             ;
-            mainkanKartu(Ans)
+            Ans = mainkanKartu(Nomor)
+            -> mainkanKartu(Nomor)
         )
 
     ), !.
