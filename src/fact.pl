@@ -8,7 +8,6 @@
 :- dynamic(listTantang/1).
 :- dynamic(listHistoryTop/1).
 :- include('helper.pl').
-:- include('player.pl').
 
 setWarna(W):-
     retractall(currColor(_)),
@@ -344,36 +343,3 @@ mainkanKartu(Number):-
         )
 
     ), !.
-
-
-
-initDummyTantang :-
-    retractall(listUrutan(_)),
-    retractall(kartu_diTangan(_,_)),
-    retractall(turn(_)),
-    retractall(kartuTop(_,_)),
-    retractall(arah(_)),
-    retractall(playerCount(_)),
-    retractall(currColor(_)),
-    retractall(listTantang(_)),
-    retractall(listHistoryTop(_)),
-
-    assertz(listUrutan(['Raya', 'Sisi'])),
-    assertz(playerCount(2)),
-    assertz(arah(kanan)),
-    assertz(kartuTop(merah,5)),
-    assertz(currColor(merah)),
-    assertz(listHistoryTop([])),
-    assertz(listTantang(['Raya'])),  % Raya yang mainkan wild_draw_four
-
-    % Sisi giliran sekarang (yang mau tantang)
-    assertz(turn('Raya')),
-
-    % Test BERHASIL: Raya punya kartu merah
-    assertz(kartu_diTangan('Raya', [merah-5, biru-3, hitam-wild_draw_four])),
-    assertz(kartu_diTangan('Sisi', [hijau-2, kuning-skip])),
-
-    write('=== Dummy Tantang 2 Pemain ==='), nl,
-    write('Raya mainkan wild_draw_four, warna aktif: merah'), nl,
-    write('Raya punya merah-5 -> tantang harusnya BERHASIL'), nl,
-    write('Ketik tantang. untuk mulai'), nl.
