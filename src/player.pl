@@ -119,6 +119,8 @@ print_Urutan([Nama|T]):-
 cekInfo :-
     kartuTop(Warna, Jenis),
     format('Kartu discard top: ~w - ~w~n', [Warna, Jenis]), nl, 
+    currColor(X),
+    format('Warna Aktif : ~w', [X]), nl,
     listUrutan(ListPemain),
     write('Urutan Pemain : '), 
     print_Urutan(ListPemain), nl, 

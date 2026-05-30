@@ -161,7 +161,7 @@ ambilKartuAwal(0,NewList,_):-
     !.
 
 ambilKartuAwal(N,List,Deck):-
-    random(0,54,Index),
+    random(0,55,Index),
     get_index(Deck,Index,Kartu),
     append_element(List,Kartu,NewList),
     N1 is N - 1,
@@ -196,7 +196,7 @@ bagiDeck:-
     discardFirst(Deck).
 
 discardFirst(Deck):-
-    random(0,54,Index),
+    random(0,55,Index),
     get_index(Deck,Index,Kartu),
     get_index(Deck,Index,W-J),
     setDiscardTop(W,J),
