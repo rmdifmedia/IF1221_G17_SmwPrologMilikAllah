@@ -6,9 +6,6 @@ append_element([],Element,[Element]).
 append_element([Head|Tail],Element,[Head|NewTail]):-
 	append_element(Tail, Element, NewTail).
 
-append_elementFront([], Elmt, [Elmt]):- !.
-append_elementFront([Head|Tail], Elmt, [Elmt, Head|Tail]):- !.
-
 /*Mencari Panjang List*/
 
 list_length([],0).

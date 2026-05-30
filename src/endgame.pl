@@ -1,6 +1,5 @@
 :- dynamic(kartu_diTangan/2).
 :- dynamic(kartu/2).
-:- dynamic(isTurnamen/0). %variabel sementara.
 
 /* fungsi helper mengambil besaran poin tiap kartu*/
 poinCard(kartu(W,N), N):-
@@ -11,14 +10,13 @@ poinCard(kartu(W,N), N):-
 
 poinCard(kartu( W,skip), 10):-
     warna(W).
-poinCard(kartu(W,reverse), 10):-
+poinCard(kartu(W,jreverse), 10):-
     warna(W).
-poinCard(kartu(W,draw_two), 10):-
+poinCard(kartu(W,drawtwo), 10):-
     warna(W).
 
 poinCard(kartu(hitam, wild), 20).
-poinCard(kartu(hitam, wild_draw_fourdrawfour), 20).
-poinCard(kartu(hitam, mimic), 20).
+poinCard(kartu(hitam, drawfour), 20).
 
 /* fungsi helper untuk menghitung skor*/
 hitungSkor([], 0, 0) :- !.
@@ -126,28 +124,15 @@ kartu_diTangan('Sisi', []).
 
 
 endGame:-
-    ( isTurnamen
-    ->  urutanPemain(ListUrutan),
-        statsAllPlayer(ListUrutan, 1, HasilStats),
-        insert_sort(HasilStats, SortedUrutan),
-        kartu_diTangan(Pemenang, []),
-        format('Permainan selesai! Selamat ~w memenangkan permainan', [Pemenang]), nl,
-        write('Berikut perhitungan poin sisa kartu:'), nl,
-        print_details(ListUrutan), nl,
-        write('Berikut perhitungan poin untuk masing-masing tim :'), nl,
-        
-
-    ;
-        urutanPemain(ListUrutan),
-        statsAllPlayer(ListUrutan, 1, HasilStats),
-        insert_sort(HasilStats, SortedUrutan),
-        kartu_diTangan(Pemenang, []),
-        format('Permainan selesai! Selamat ~w memenangkan permainan', [Pemenang]), nl,
-        write('Berikut perhitungan poin sisa kartu:'), nl,
-        print_details(ListUrutan), nl,
-        write('Urutan Pemenang :'), nl,
-        printRank(SortedUrutan, 1), nl.
-    ).
+    urutanPemain(ListUrutan),
+    statsAllPlayer(ListUrutan, 1, HasilStats),
+    insert_sort(HasilStats, SortedUrutan),
+    kartu_diTangan(Pemenang, []),
+    format('Permainan selesai! Selamat ~w memenangkan permainan', [Pemenang]), nl,
+    write('Berikut perhitungan poin sisa kartu:'), nl,
+    print_details(ListUrutan), nl,
+    write('Urutan Pemenang :'), nl,
+    printRank(SortedUrutan, 1), nl.
 
 
 
