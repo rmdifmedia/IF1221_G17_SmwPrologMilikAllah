@@ -8,7 +8,7 @@
 :- dynamic(listHistoryTop/1).
 
 /* Input jumlah pemain dengan batasan */
-startGame:-
+newGame:-
     initdeck,
     retractall(arah(_)),
     retractall(turn(_)),
