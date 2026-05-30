@@ -8,6 +8,7 @@
 :- dynamic(listTantang/1).
 :- dynamic(listHistoryTop/1).
 :- include('helper.pl').
+:- include('player.pl').
 
 setWarna(W):-
     retractall(currColor(_)),
@@ -143,6 +144,8 @@ pilihwarnaLoop(WarnaBaru):-
         pilihwarnaLoop(WarnaBaru)
     ). 
 
+assertz(listHistoryTop([])).
+
 /* efek kartu*/ 
 efekKartu(hitam, mimic):-
     write('Menulusuri riwayat permainan...'), nl,
@@ -182,26 +185,35 @@ efekKartu(hitam, wild) :-
             efekKartu(hitam, wild)
     ).
 
-efekKartu(_, drawtwo) :-
+efekKartu(_, draw_two) :-
     nextTurn,
     repeat_N_ambilKartu(2, AmbilKartu),
     nextTurn.
 
-efekKartu(hitam, drawfour) :-
+efekKartu(hitam, wild_draw_four) :-
     turn(PrevPlayer),
-    write('Pilih Warna Aktif : '), nl,
+    write('Pilih Warna Aktif : '),
     read(WarnaAktif),
     (
         warna(WarnaAktif)
         ->  setWarna(WarnaAktif)
         ;   write('Warna tidak valid! Silahkan pilih warna lain :-D'), nl,
-            efekKartu(hitam, drawfour)
+            efekKartu(hitam, wild_draw_four)
     ),
     addListTantang(PrevPlayer),
-    nextTurn.
+    nextTurn,
+    turn(NextPlayer),
+    format('~nGiliran ~w! Pilih opsi berikut~n1. Ambil 4 kartu~n2. Tantang~nKetik Opsi: ', [NextPlayer]),
+    read(Opsi),
+    ( Opsi = 'Ambil Kartu' -> opsiDrawFour(1)
+    ; Opsi = 'tantang' -> opsiDrawFour(2)
+    ; write('Opsi tidak valid!'), nl,
+      efekKartu(hitam, wild_draw_four)  
+    ).
 
 opsiDrawFour(1) :- 
-    repeat_N_ambilKartu(4),
+    nextTurn,
+    repeat_N_ambilKartu(2, AmbilKartu),
     nextTurn.
 
 opsiDrawFour(2) :-
@@ -254,13 +266,13 @@ isKartuValid(W,_):- /*kartu valid warnanya sama*/
     kartuTop(W,_). 
 isKartuValid(W,X):- /*kartu valid jenisnya sama*/
     \+ W == 'hitam',
-    \+ X == 'drawtwo',
+    \+ X == 'draw_two',
     kartuTop(_,X).
 
 isKartuValid(W, drawtwo):-
     \+ W == 'hitam',
     kartuTop(_,J),
-    \+ J == 'drawtwo'.
+    \+ J == 'draw_two'.
 
 removeCard(_, [], []).
 removeCard(X, [X|T], T).
@@ -288,18 +300,20 @@ riwayatKartuTop:-
 
 tantang :-
     turn(Pemain),
-    kartuTop(hitam,drawfour),
+    kartuTop(hitam, wild_draw_four),
     currColor(WarnaAktif),
-    write("Tantangan Dilakukan!"), nl,
+    write('Tantangan Dilakukan!'), nl,
     listTantang([PrevPemain|_]),
-    (member(kartu(WarnaAktif,_), ListKartu)
-    -> write("Tantangan Berhasil"), nl,
-    format("~w Mendapatkan 4 Kartu Acak...", [PrevPemain]), nl,
-    nextTurn, repeat_N_ambilKartu(4), nextTurn
+    kartu_diTangan(PrevPemain, ListKartu),
+    (member(WarnaAktif-_, ListKartu)
+    -> write('Tantangan Berhasil'), nl,
+    format('~w Mendapatkan 4 Kartu Acak...~n', [PrevPemain]),
+    nextTurn, repeat_N_ambilKartu(4, _), nextTurn,
+        ( Jumlah =:= 2 -> nextTurn ;  true)
     ;
-    write("Tantangan Gagal"), nl,
-    format("~w Mendapatkan 6 Kartu Acak...", [Pemain]), nl,
-    repeat_N_ambilKartu(6), nextTurn
+    write('Tantangan Gagal'), nl,
+    format('~w Mendapatkan 6 Kartu Acak...~n', [Pemain]),
+    repeat_N_ambilKartu(6, _), nextTurn
     ), 
     retractall(listTantang(_)),  
     assertz(listTantang([])).
@@ -333,20 +347,33 @@ mainkanKartu(Number):-
 
 
 
-/* initDummy :-
+initDummyTantang :-
     retractall(listUrutan(_)),
     retractall(kartu_diTangan(_,_)),
     retractall(turn(_)),
     retractall(kartuTop(_,_)),
     retractall(arah(_)),
     retractall(playerCount(_)),
+    retractall(currColor(_)),
+    retractall(listTantang(_)),
+    retractall(listHistoryTop(_)),
+
     assertz(listUrutan(['Raya', 'Sisi'])),
-    assertz(kartu_diTangan('Raya', [kartu(merah,9), kartu(hitam,wild), kartu(hijau,1), kartu(biru,skip)])),
-    assertz(kartu_diTangan('Sisi', [kartu(hitam,drawfour), kartu(hijau,3), kartu(biru,jreverse)])),
-    assertz(turn('Sisi')),
-    assertz(kartuTop(hijau, 5)),
-    assertz(arah(kanan)),
     assertz(playerCount(2)),
-    assertz(listTantang([])).
-    initdeck.
-*/
+    assertz(arah(kanan)),
+    assertz(kartuTop(merah,5)),
+    assertz(currColor(merah)),
+    assertz(listHistoryTop([])),
+    assertz(listTantang(['Raya'])),  % Raya yang mainkan wild_draw_four
+
+    % Sisi giliran sekarang (yang mau tantang)
+    assertz(turn('Raya')),
+
+    % Test BERHASIL: Raya punya kartu merah
+    assertz(kartu_diTangan('Raya', [merah-5, biru-3, hitam-wild_draw_four])),
+    assertz(kartu_diTangan('Sisi', [hijau-2, kuning-skip])),
+
+    write('=== Dummy Tantang 2 Pemain ==='), nl,
+    write('Raya mainkan wild_draw_four, warna aktif: merah'), nl,
+    write('Raya punya merah-5 -> tantang harusnya BERHASIL'), nl,
+    write('Ketik tantang. untuk mulai'), nl.
