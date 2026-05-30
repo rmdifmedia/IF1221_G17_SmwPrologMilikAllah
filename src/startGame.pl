@@ -1,5 +1,3 @@
-:- include('fact.pl').
-
 /*Deklarasi Fakta*/
 :- dynamic(gameRun/1).     %gameRun(Status)
 :- dynamic(playerName/1).  %playerName(Player)
@@ -11,6 +9,8 @@
 /* Input jumlah pemain dengan batasan */
 startGame:-
     initdeck,
+    retractall(arah(_)),
+    retractall(turn(_)),
     retractall(kartuTop(_,_)),
     retractall(listKartu(_)),
     retractall(kartu_diTangan(_,_)),
@@ -18,6 +18,7 @@ startGame:-
     retractall(listPlayer(_)),
     retractall(playerName(_)),
     retractall(playerCount(_)),
+    assertz(arah(kanan)),
     assertz(gameRun(true)),
     inputPemain,
     !.
@@ -133,7 +134,7 @@ randomMember(List,Player,Idx):-
 
 randomUrutan(Number, Number, List, ListUrutan):-
     randomMember(List,Player,Idx),
-    append(ListUrutan, Player, ResList),
+    append_element(ListUrutan, Player, ResList),
     write(Player),
     write('.'),
     assertz(listUrutan(ResList)),
@@ -166,7 +167,8 @@ ambilKartuAwal(N,List,Deck):-
     N1 is N - 1,
     ambilKartuAwal(N1,NewList,Deck).
 
-bagiKartu(Jumlah,Jumlah,Deck,CurrentPlayer):-
+bagiKartu(Jumlah,Jumlah,Deck,ListPlayer):-
+    get_index(ListPlayer,0,CurrentPlayer),
     ambilKartuAwal(7,[],Deck),
     listKartu(DeckPlayer),
     assertz(kartu_diTangan(CurrentPlayer,DeckPlayer)),
@@ -196,6 +198,8 @@ bagiDeck:-
 discardFirst(Deck):-
     random(0,54,Index),
     get_index(Deck,Index,Kartu),
+    get_index(Deck,Index,W-J),
+    setDiscardTop(W,J),
     write('Kartu discard top: '),
     write(Kartu),
     write('.'),
@@ -208,4 +212,5 @@ firstTurn:-
     get_index(Urutan,0,FirstPlayer),
     write('Giliran '),
     write(FirstPlayer),
-    write('.').                  
+    write('.'),
+    assertz(turn(FirstPlayer)).                  

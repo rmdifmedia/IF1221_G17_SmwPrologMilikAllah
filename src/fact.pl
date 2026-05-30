@@ -85,6 +85,7 @@ kartu(biru,9).
 kartu(biru,skip).
 kartu(biru,reverse).
 kartu(biru,draw_two).
+kartu(biru,draw_two).
 kartu(hitam,wild).
 kartu(hitam,wild_draw_four).
 kartu(hitam, mimic).
@@ -201,6 +202,23 @@ efekKartu(hitam, wild_draw_four) :-
     ),
     addListTantang(PrevPlayer),
     nextTurn, !.
+
+opsiDrawFour(1) :- 
+    repeat_N_ambilKartu(4),
+    nextTurn.
+
+efekKartu(hitam, drawfour) :-
+    turn(PrevPlayer),
+    write('Pilih Warna Aktif : '), nl,
+    read(WarnaAktif),
+    (
+        warna(WarnaAktif)
+        ->  setWarna(WarnaAktif)
+        ;   write('Warna tidak valid! Silahkan pilih warna lain :-D'), nl,
+            efekKartu(hitam, drawfour)
+    ),
+    addListTantang(PrevPlayer),
+    nextTurn.
 
 opsiDrawFour(1) :- 
     repeat_N_ambilKartu(4),
@@ -329,7 +347,7 @@ mainkanKartu(Number):-
     ), !.
 
 
-
+/*
  initDummy :-
     retractall(listUrutan(_)),
     retractall(kartu_diTangan(_,_)),
@@ -348,3 +366,4 @@ mainkanKartu(Number):-
     assertz(listHistoryTop([])),
     assertz(listTantang([])).
     initdeck.
+*/

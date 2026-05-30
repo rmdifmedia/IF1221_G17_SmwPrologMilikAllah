@@ -18,11 +18,11 @@ list_length([_|Tail],Len):-
 
 /*Mendapatkan Akses Elemen berdasarkan Indeks*/
 
-get_index([Element|_],0,Element).
 get_index([_|Tail],Index,Element):-
 	Index > 0,
 	NewIndex is Index - 1,
 	get_index(Tail,NewIndex,Element).
+get_index([Element|_],0,Element).
 
 /*Menghapus Elemen*/
 
