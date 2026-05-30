@@ -6,6 +6,8 @@
 :- dynamic(deck/1).
 :- dynamic(fullDeck/1).
 :- dynamic(listTantang/1).
+:- dynamic(listHistoryTop/1).
+:- include('helper.pl').
 
 setWarna(W):-
     retractall(currColor(_)),
@@ -83,6 +85,7 @@ kartu(biru,reverse).
 kartu(biru,draw_two).
 kartu(hitam,wild).
 kartu(hitam,wild_draw_four).
+kartu(hitam, mimic).
 
 :- initialization(initdeck).
 
@@ -100,9 +103,64 @@ findAllKartu(N,X,List):-
     assertz(kartu(W,J)).
 
 initdeck :-
-    findAllKartu(54,0,[]).
+    findAllKartu(55,0,[]).
 
 /* Predikat */
+efekKartu(W-J):-
+    !,
+    efekKartu(W, J).
+
+/*helper check kartu aksi untuk efek mimic*/
+isKartuAksi(W-J):-
+    !,
+    isKartuAksi(W,J).
+
+isKartuAksi(_,J):-
+    J == 'skip', !.
+isKartuAksi(_,J):-
+    J == 'draw_two', !.
+isKartuAksi(_,J):-
+    J == 'wild_draw_four', !.
+isKartuAksi(_,J):-
+    J == 'wild', !.
+
+cekListHitory(_, [], hitam, wild):-!.
+cekListHitory(N, [W-J|Tail], W, J):-
+    isKartuAksi(W, J), !,
+    format('Kartu aksi yang terakhir dimainkan: ~w-~w (~w giliran lalu)', [W, J, N]), nl.
+cekListHitory(N, [W-J|Tail], HistoryW, HistoryJ):-
+    N1 is N + 1,
+    cekListHitory(N1, Tail, HistoryW, HistoryJ).
+
+pilihwarnaLoop(WarnaBaru):-
+    write('Pilih warna: '), nl, 
+    read(WarnaInput),
+    (
+        warna(WarnaInput)
+    ->  setWarna(WarnaInput),
+        WarnaBaru = WarnaInput
+    ;   write('Warna tidak valid! Silahkan pilih warna lain :-D'), nl,
+        pilihwarnaLoop(WarnaBaru)
+    ). 
+
+/* efek kartu*/ 
+efekKartu(hitam, mimic):-
+    write('Menulusuri riwayat permainan...'), nl,
+    listHistoryTop(History),
+    cekListHitory(1, History, W, J),
+    format('Kartu mimic akan menyalin efek kartu ~w~n', [J]),
+    (
+        J == 'wild'
+    ->  efekKartu(hitam, wild)
+
+    ;   J == 'wild_draw_four'
+    ->  efekKartu(hitam, wild_draw_four)
+
+    ;   pilihwarnaLoop(WarnaBaru),
+        efekKartu(WarnaBaru, J)
+    ), !.
+
+
 efekKartu(_, skip):-
     nextTurn, 
     nextTurn.
@@ -182,6 +240,10 @@ repeat_N_ambilKartu(N, AmbilKartu):-
 
 /* mainkanKartu */
 /* Helper */
+isKartuValid(W-J):-
+    !,
+    isKartuValid(W,J).
+
 isKartuValid(W, J) :-
     \+ W == hitam,
     currColor(W).
@@ -207,9 +269,22 @@ removeCard(X, [H|T], [H|Terhapus]):-
     removeCard(X,T,Terhapus).  
 
 setDiscardTop(W,J):-
+    riwayatKartuTop,
     retractall(kartuTop(_,_)),
     assertz(kartuTop(W,J)),
     setWarna(W).
+
+/* case awal; pas discardtop masih kosong*/
+riwayatKartuTop:-
+    \+ kartuTop(_,_),
+    !.
+
+riwayatKartuTop:-
+    kartuTop(TopW, TopJ),
+    listHistoryTop(History),
+    append_elementFront(History, TopW-TopJ, NewHistory),
+    retractall(listHistoryTop(_)),
+    assertz(listHistoryTop(NewHistory)), !.
 
 tantang :-
     turn(Pemain),
