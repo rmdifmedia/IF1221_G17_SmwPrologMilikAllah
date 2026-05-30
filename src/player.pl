@@ -25,9 +25,9 @@ reverseUrutan :-
     (
         arah(kanan)
         -> retract(arah(kanan)),
-            assert(arah(kiri))
+            assertz(arah(kiri))
         ; retract(arah(kiri)),
-        assert(arah(kanan)) 
+        assertz(arah(kanan)) 
     ).
 
 aksiUtama(Pemain, AksUtamaList) :-
@@ -75,14 +75,14 @@ lihatCommand :-
 
 
 printKartu(_, []).
-printKartu(N, [kartu(Warna, Jenis) | T] ) :-
+printKartu(N, [Warna-Jenis | T] ) :-
     format('~w. ~w-~w~n', [N, Warna, Jenis]),
     N1 is N + 1,
     printKartu(N1, T).
 
 lihatKartu :-
   turn(Pemain), 
-        write('Berikut kartu yang anda miliki.'), nl,
+        write('Berikut kartu yang anda miliki:'), nl,
         (   kartu_diTangan(Pemain, ListKartu)
         ->  printKartu(1, ListKartu)
         ; write('Kamu! tidak memiliki kartu!'), nl
@@ -113,9 +113,9 @@ print_Urutan([Nama|T]):-
 
 cekInfo :-
     kartuTop(Warna, Jenis),
-    format('Kartu discard top: ~w - ~w~n', [Warna, Jenis]), nl,
-    currColor(W),
-    format('Warna Aktif : ~w', [W]), nl,  
+    format('Kartu discard top: ~w - ~w~n', [Warna, Jenis]), nl, 
+    currColor(X),
+    format('Warna Aktif : ~w', [X]), nl, 
     turn(Name),
     format('Giliran : ~w', [Name]), nl, 
     listUrutan(ListPemain),
