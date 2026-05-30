@@ -103,6 +103,10 @@ initdeck :-
     findAllKartu(54,0,[]).
 
 /* Predikat */
+efekKartu(W-J):-
+    !,
+    efekKartu(W, J).
+
 efekKartu(_, skip):-
     nextTurn, 
     nextTurn.
@@ -182,6 +186,10 @@ repeat_N_ambilKartu(N, AmbilKartu):-
 
 /* mainkanKartu */
 /* Helper */
+isKartuValid(W-J):-
+    !,
+    isKartuValid(W,J).
+
 isKartuValid(W, J) :-
     \+ W == hitam,
     currColor(W).
