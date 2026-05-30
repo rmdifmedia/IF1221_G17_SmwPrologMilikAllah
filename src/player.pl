@@ -88,7 +88,7 @@ printKartu(N, [Kartu | T] ) :-
 
 lihatKartu :-
   turn(Pemain), 
-        write('Berikut kartu yang anda miliki.'), nl,
+        write('Berikut kartu yang anda miliki:'), nl,
         (   kartu_diTangan(Pemain, ListKartu)
         ->  printKartu(1, ListKartu)
         ; write('Kamu! tidak memiliki kartu!'), nl
@@ -119,6 +119,10 @@ print_Urutan([Nama|T]):-
 cekInfo :-
     kartuTop(Warna, Jenis),
     format('Kartu discard top: ~w - ~w~n', [Warna, Jenis]), nl, 
+    currColor(X),
+    format('Warna Aktif : ~w', [X]), nl, 
+    turn(Name),
+    format('Giliran : ~w', [Name]), nl, 
     listUrutan(ListPemain),
     write('Urutan Pemain : '), 
     print_Urutan(ListPemain), nl, 
