@@ -4,7 +4,7 @@
 :- include('helper.pl').
 :- initialization(main).
 
-main :-
+main :-                                                                                                                                                                                                                       
     format('>> New Game ~n >> Load Game ~n Ketik Opsi: ', []),
     read(Opsi),
     (Opsi = 'New Game'

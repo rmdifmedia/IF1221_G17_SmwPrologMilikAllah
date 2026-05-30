@@ -7,6 +7,7 @@
 :- dynamic(fullDeck/1).
 :- dynamic(listTantang/1).
 :- dynamic(listHistoryTop/1).
+:- include('helper.pl').
 
 setWarna(W):-
     retractall(currColor(_)),

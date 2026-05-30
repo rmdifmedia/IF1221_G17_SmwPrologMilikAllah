@@ -5,6 +5,7 @@
 :- dynamic(listPlayer/1). %listPlayer(List)
 :- dynamic(listUrutan/1). %listUrutan(List)
 :- dynamic(listKartu/1). %listKartu(List)
+:- dynamic(listHistoryTop/1).
 
 /* Input jumlah pemain dengan batasan */
 startGame:-
@@ -18,8 +19,10 @@ startGame:-
     retractall(listPlayer(_)),
     retractall(playerName(_)),
     retractall(playerCount(_)),
+    retractall(listHistoryTop(_)),
     assertz(arah(kanan)),
     assertz(gameRun(true)),
+    assertz(listHistoryTop([])),
     inputPemain,
     !.
 
