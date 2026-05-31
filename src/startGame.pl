@@ -17,6 +17,8 @@
 /* Input jumlah pemain dengan batasan */
 newGame:-
     initdeck,
+    initListUni,
+    initListSembunyi,
     retractall(playerTeamNumber(_,_)),
     retractall(playerTeam(_)),
     retractall(modeGame(_)),
