@@ -120,6 +120,8 @@ cekInfo :-
     kartuTop(Warna, Jenis),
     format('Kartu discard top: ~w - ~w~n', [Warna, Jenis]), nl, 
     currColor(X),
+    turn(Y),
+    format('Giliran : ~w', [Y]), nl,
     format('Warna Aktif : ~w', [X]), nl,
     listUrutan(ListPemain),
     write('Urutan Pemain : '), 
