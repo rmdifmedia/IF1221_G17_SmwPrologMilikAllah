@@ -37,6 +37,7 @@ newGame:-
     !.
 
 modeGame:-
+    nl,
     write('Tersedia 2 mode permainan.'),
     nl,
     write('1. Mode klasik'),
@@ -45,7 +46,6 @@ modeGame:-
     nl,
     write('Pilih mode permainan: '),
     read(Mode),
-    nl,
     checkValidMode(Mode),
     pilihMode(Mode),
     (Mode == 2 ->
@@ -64,7 +64,8 @@ checkValidMode(Mode):-
     (\+integer(Mode) ->
     write('Mohon masukkan angka 1 atau 2.'),
     nl,
-    modeGame;
+    modeGame,
+    !;
     !).
 
 pilihMode(Mode):-
@@ -90,7 +91,8 @@ checkValidInput(JumlahPemain):-
     (\+integer(JumlahPemain) ->
     write('Mohon masukkan angka antara 2-4.'),
     nl,
-    inputPemain;
+    inputPemain,
+    !;
     !).
 
 hitungPemain(JumlahPemain):-
@@ -182,9 +184,7 @@ cekFormatNama(Nama,N):-
 
 /* Prompt meminta nama pemain */
 namaPemain(N):-
-    write('Masukkan nama pemain '),
-    write(N),
-    write(' : '),
+    format('Masukkan nama pemain ~d : ',[N]),
     read(Nama),
     N1 is N - 1,
     (N == 1 ->
@@ -217,14 +217,9 @@ randomTim(TeamNumber,TeamCount,List,ListTeam):-
     assertz(playerTeam(FinalList)),
     assertz(playerTeamNumber(Player1,TeamNum)),
     assertz(playerTeamNumber(Player2,TeamNum)),
-    format('Tim ~d : ', [TeamNum]),
     get_index(FinalList,0,FirstPlayer),
     get_index(FinalList,1,SecondPlayer),
-    write(FirstPlayer),
-    write(', '),
-    write(SecondPlayer),
-    write('.'),
-    nl,
+    format('Tim ~d : ~w, ~w.~n', [TeamNum,Player1,Player2]),
     randomTim(TeamNum,TeamCount,NewList2,[]).
 
 randomUrutan(Number, Number, List, ListUrutan):-
@@ -295,17 +290,19 @@ discardFirst(Deck):-
     get_index(Deck,Index,Kartu),
     get_index(Deck,Index,W-J),
     setDiscardTop(W,J),
-    write('Kartu discard top: '),
-    write(Kartu),
-    write('.'),
-    nl,
-    nl,
+    format('Kartu discard top: ~w.~n~n',[Kartu]),
     firstTurn.
 
 firstTurn:-
     listUrutan(Urutan),
     get_index(Urutan,0,FirstPlayer),
-    write('Giliran '),
-    write(FirstPlayer),
-    write('.'),
-    assertz(turn(FirstPlayer)).                  
+    format('Giliran ~w.',[FirstPlayer]),
+    read(MM),
+    assertz(turn(FirstPlayer)),
+    listPlayer(List),
+    list_length(List,LenList),
+    cekJumlahKartuPemain(List,LenList,Checker),
+    random(X),
+    (X =< 0.2 ->
+    godsHand;
+    true).               

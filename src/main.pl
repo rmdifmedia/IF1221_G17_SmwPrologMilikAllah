@@ -3,7 +3,7 @@
 :- include('startGame.pl').
 :- include('helper.pl').
 :- include('saveGame.pl').
-:- initialization(main).
+:- initialization(startGame).
 
 startGame :-                                           
     write('================================'), nl,

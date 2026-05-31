@@ -12,7 +12,29 @@
 :- dynamic(updateListUni/0).
 /* UNI */
 
-nextTurn :- 
+cekJumlahKartuPem(_,0,Checker):-
+    Checker = 1,
+    !.
+
+cekJumlahKartuPemain([Player|Rest],LenList,Checker):-
+    kartu_diTangan(Player,ListKartu),
+    list_length(ListKartu,Len),
+    (Len == 1 ->
+    Lenn is LenList - 1,
+    cekJumlahKartuPemain(Rest,Lenn,Checker);
+    Checker = 0,
+    !).
+
+nextTurn :-
+    listPlayer(List),
+    list_length(List,LenList),
+    cekJumlahKartuPemain(List,LenList,Checker),
+    (Checker == 0 ->
+    random(X),
+    (X =< 0.2 ->
+    godsHand;
+    true);
+    true),
     turn(Nama),
     arah(Arah),
     playerCount(Jumlah),
@@ -70,7 +92,8 @@ printNomor(N, [H|T]) :-
     printNomor(N1, T).
 
 lihatCommand :- 
-     turn(Pemain),
+    nl,
+    turn(Pemain),
         findall(A, aksi_utama_tersedia(Pemain, A), AksiUtama),
         write('Aksi utama yang tersedia:'), nl,
         printNomor(1, AksiUtama),
@@ -97,7 +120,6 @@ lihatKartu :-
         modeGame(Mode),
         (Mode == 2 ->
         nl,
-        nl,
         playerTeamNumber(Pemain,X),
         retract(playerTeamNumber(Pemain,X)),
         playerTeamNumber(Teammate,X),
@@ -105,7 +127,8 @@ lihatKartu :-
         format('Berikut kartu yang teman satu tim anda miliki (~w).~n',[Teammate]),
         kartu_diTangan(Teammate, ListKartuTeman),
         printKartu(1, ListKartuTeman);
-        true).
+        true),
+        !.
 
 
 
@@ -145,18 +168,8 @@ cekInfo :-
     get_index(X,1,SecondPlayer1),
     get_index(Y,0,FirstPlayer2),
     get_index(Y,1,SecondPlayer2),
-    write('Tim 1 : '),
-    write(FirstPlayer1),
-    write(', '),
-    write(SecondPlayer1),
-    write('.'),
-    nl,
-    write('Tim 2 : '),
-    write(FirstPlayer2),
-    write(', '),
-    write(SecondPlayer2),
-    write('.'),
-    nl,
+    format('Tim 1 : ~w, ~w.~n',[FirstPlayer1,SecondPlayer1]),
+    format('Tim 2 : ~w, ~w.~n',[FirstPlayer2,SecondPlayer2]),
     nl;
     true),
     listUrutan(ListPemain),
@@ -322,3 +335,34 @@ tangkap(NamaPemain):-
     nl,
     !.
 /* TANGKAP */
+
+godTaketh(Player,ListKartu,ChosenKartu):-
+    list_length(ListKartu,Len),
+    random(0,Len,Idx),
+    get_index(ListKartu,Idx,ChosenKartu),
+    delete_element(ListKartu,Idx,NewListKartu),
+    retract(kartu_diTangan(Player,_)),
+    assertz(kartu_diTangan(Player,NewListKartu)).
+
+godGiveth(Player,ListKartu,GivenKartu):-
+    append_element(ListKartu,GivenKartu,NewListKartu),
+    retract(kartu_diTangan(Player,_)),
+    assertz(kartu_diTangan(Player,NewListKartu)).
+
+godsHand:-
+    nl,
+    write('Tuhan telah berkehendak.'),
+    nl,
+    listPlayer(List),
+    randomMember(List,Player_SRC,Idx),
+    delete_element(List,Idx,NewList),
+    randomMember(NewList,Player_DEST,_),
+    kartu_diTangan(Player_SRC,ListKartu_SRC),
+    kartu_diTangan(Player_DEST,ListKartu_DEST),
+    godTaketh(Player_SRC,ListKartu_SRC,ChosenKartu),
+    godGiveth(Player_DEST,ListKartu_DEST,ChosenKartu),
+    format('Kartu ~w milik ~w berpindah ke tangan ~w!~n~n',[ChosenKartu,Player_SRC,Player_DEST]),
+    format('Giliran ~w.~n',[Player_DEST]),
+    retractall(turn(_)),
+    assertz(turn(Player_DEST)),
+    !.
