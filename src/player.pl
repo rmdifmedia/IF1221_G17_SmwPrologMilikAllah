@@ -62,28 +62,34 @@ reverseUrutan :-
     ).
 
 /*lihatCommand*/
-
-aksiUtama(Pemain, AksUtamaList) :-
-    turn(Pemain),
-    kartuTop(_, drawfour),
-    findall(A, aksi_utama_tersedia(Pemain, A), AksiUtamaList).
-
-aksi_utama_tersedia(_, ambilKartu).
+aksi_utama_tersedia(Pemain, ambilKartu) :-
+    turn(Pemain).
 
 aksi_utama_tersedia(Pemain, tantang) :-
-    kartuTop(_, drawfour),
     turn(Pemain).
+
+aksi_utama_tersedia(Pemain, sembunyikanKartu) :-
+    turn(Pemain),
+    kartu_diTangan(Pemain, ListKartu),
+    list_length(ListKartu, Len),
+    Len > 1,
+    listSembunyi(ListSembunyi),
+    \+ cekSembunyi(Pemain, ListSembunyi, _).
+
+aksi_utama_tersedia(Pemain, tampilkanKartu) :-
+    turn(Pemain),
+    listSembunyi(ListSembunyi),
+    cekSembunyi(Pemain, ListSembunyi, _).
 
 aksi_utama_tersedia(Pemain, uni) :-
     turn(Pemain),
     kartu_diTangan(Pemain, ListKartu),
-    member(Kartu, ListKartu), 
+    member(Kartu, ListKartu),
     isKartuValid(Kartu),
-    length(ListKartu, Length),
-    Length =:= 2.
-
-/*aksi_utama_tersedia(Pemain, tangkap) :-
-    turn(Pemain). */
+    list_length(ListKartu, Len),
+    Len =:= 2,
+    listSembunyi(ListSembunyi),
+    \+ cekSembunyi(Pemain, ListSembunyi, _).
 
 aksi_utama_tersedia(Pemain, mainkanKartu) :- 
     turn(Pemain),
@@ -101,12 +107,12 @@ printNomor(N, [H|T]) :-
 lihatCommand :- 
     nl,
     turn(Pemain),
-        findall(A, aksi_utama_tersedia(Pemain, A), AksiUtama),
-        write('Aksi utama yang tersedia:'), nl,
-        printNomor(1, AksiUtama),
-        nl,
-        write('Aksi pendukung yang tersedia:'), nl,
-        printNomor(1, [lihatCommand, lihatKartu, cekInfo]).
+    findall(A, aksi_utama_tersedia(Pemain, A), AksiUtama),
+    write('Aksi utama yang tersedia:'), nl,
+    printNomor(1, AksiUtama),
+    nl,
+    write('Aksi pendukung yang tersedia:'), nl,
+    printNomor(1, [lihatCommand, lihatKartu, cekInfo]).
 
 /*lihatKartu*/
 printKartu(_, []):-
