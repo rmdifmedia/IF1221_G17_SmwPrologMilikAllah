@@ -240,9 +240,6 @@ uni(Number):-
     write(Pemain), write(' mendapatkan 1 kartu acak.'), nl,
     nextTurn.
 
-/* NOTES: repeat_N_ambilKartu gagal. Pending benerin fact.pl ke yang work di gnu prolog */
-/* SOLUSI: karena dummy, sementara fact pakai dikasih inilization initdeck. Selain buat ngecek uni sendiri, inilization di fact, hapus. */
-
 uni(Number):-
     uni_Info(Pemain, ListKartu),
     NumberMin is Number - 1,
@@ -273,8 +270,6 @@ uni(Number):-
     write(Pemain), write(' menyerukan UNI!'), nl,
     addListUni(Pemain).
 
-/* NOTES: Walaupun uni berhasil, ga akan substract kartu_diTangan UNTUK SAAT INI, karena rules mainkanKartu dimatikan*/
-/* UNI */
 
 /* TANGKAP */
 /*bikin repeat_N_ambilKartu versi player bukan selalu di-turn. Penalti ver*/
@@ -309,6 +304,15 @@ tangkap(NamaPemain):-
     write('Tidak ada nama pemain '), write(NamaPemain), write(' untuk ditangkap.'), 
     nl,
     !.
+
+tangkap(NamaPemain):-
+    listSembunyi(ListSembunyi),
+    cekSembunyi(NamaPemain, ListSembunyi, _),
+    !,
+    turn(Pemain),
+    format('Terdapat kartu yang disembunyikan oleh ~w.~n', [NamaPemain]),
+    format('Perintah tangkap tidak valid. ~w mendapatkan 1 kartu penalti.~n', [Pemain]),
+    penalti_N_Kartu(1, Pemain).
 
 tangkap(NamaPemain):-
     kartu_diTangan(NamaPemain, ListKartu), 
