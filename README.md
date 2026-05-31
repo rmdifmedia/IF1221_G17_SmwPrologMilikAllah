@@ -2,10 +2,10 @@
 > Praktikum-Tugas Besar -- IF1221 Logika Komputasional
 ---
 ## Table of Contents
-* [Deskripsi Program](#Deskripsi_Program)
+* [Deskripsi Program](#Deskripsi-Program)
 * [Fitur](#Fitur)
-* [Cara Bermain](#Cara_Bermain)
-* [Struktur File Program](#Struktur_File_Program)
+* [Cara Bermain](#Cara-Bermain)
+* [Struktur File Program](#Struktur-File-Program)
 * [Kontributor](#Kontributor)
 
 ---
