@@ -38,8 +38,6 @@ nextTurn :-
     random(X),
     (X =< 0.2 ->
     godsHand;
-    true);
-    true),
     turn(Nama),
     arah(Arah),
     playerCount(Jumlah),
@@ -50,7 +48,19 @@ nextTurn :-
     ; Next is (Index-1) mod Jumlah),
     get_index(ListUrutan, Next, NamaNext),
     retractall(turn(_)),
-    assertz(turn(NamaNext)).
+    assertz(turn(NamaNext)));
+    turn(Nama),
+    arah(Arah),
+    playerCount(Jumlah),
+    listUrutan(ListUrutan),
+    find_index(ListUrutan, Index, Nama),
+    (Arah = kanan
+    -> Next is (Index+1) mod Jumlah
+    ; Next is (Index-1) mod Jumlah),
+    get_index(ListUrutan, Next, NamaNext),
+    retractall(turn(_)),
+    assertz(turn(NamaNext))).
+    
 
 reverseUrutan :-
     (
@@ -238,7 +248,8 @@ uni(Number):-
     write(Pemain), write(' tidak memenuhi syarat perintah UNI!'), nl,
     repeat_N_ambilKartu(1, AmbilKartu),
     write(Pemain), write(' mendapatkan 1 kartu acak.'), nl,
-    nextTurn.
+    nextTurn,
+    !.
 
 uni(Number):-
     uni_Info(Pemain, ListKartu),
