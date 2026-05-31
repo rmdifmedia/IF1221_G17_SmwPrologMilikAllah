@@ -178,7 +178,8 @@ cekFormatNama(Nama,N):-
     list_length(List,Len),
     findNama(Nama,List,Len,Checker),
     ( Checker == 0 ->
-    assertz(playerName(Nama));
+    assertz(playerName(Nama)),
+    inputDataPemain(Nama);
     write('Nama sudah digunakan. Masukkan nama lain : '),
     read(NamaLain),
     cekFormatNama(NamaLain,N));
@@ -191,7 +192,8 @@ namaPemain(N):-
     N1 is N - 1,
     (N == 1 ->
     (\+integer(Nama)->
-     assertz(playerName(Nama));
+     assertz(playerName(Nama)),
+     inputDataPemain(Nama);
      formatInvalid(N));
     cekFormatNama(Nama,N1)).
 
