@@ -5,6 +5,7 @@
 :- dynamic(playerCount/1). 
 :- dynamic(listUrutan/1). %ListUrutan(List).
 :- dynamic(arah/1).
+:- dynamic(currColor/1).
 
 /*Sembunyi*/
 :- dynamic(listSembunyi/1).
@@ -190,6 +191,10 @@ cekInfo :-
     kartuTop(Warna, Jenis),
     format('Kartu discard top: ~w-~w~n', [Warna, Jenis]),
     nl,
+    turn(X),
+    format('Giliran: ~w~n', [X]),
+    currColor(Y),
+    format('Warna Aktif: ~w~n', [Y]),
     modeGame(Mode),
     (Mode == 2 ->
     playerTeam(X),
