@@ -88,11 +88,25 @@ printKartu(N, [Kartu | T] ) :-
 
 lihatKartu :-
   turn(Pemain), 
+        nl,
         write('Berikut kartu yang anda miliki.'), nl,
         (   kartu_diTangan(Pemain, ListKartu)
         ->  printKartu(1, ListKartu)
-        ; write('Kamu! tidak memiliki kartu!'), nl
-        ).
+        ; write('Kamu tidak memiliki kartu!'), nl
+        ),
+        modeGame(Mode),
+        (Mode == 2 ->
+        nl,
+        nl,
+        playerTeamNumber(Pemain,X),
+        retract(playerTeamNumber(Pemain,X)),
+        playerTeamNumber(Teammate,X),
+        assertz(playerTeamNumber(Pemain,X)),
+        format('Berikut kartu yang teman satu tim anda miliki (~w).~n',[Teammate]),
+        kartu_diTangan(Teammate, ListKartuTeman),
+        printKartu(1, ListKartuTeman);
+        true).
+
 
 
 :- dynamic(kartuTop/2). /* ambil kartu teratas */
@@ -117,11 +131,38 @@ print_Urutan([Nama|T]):-
     print_Urutan(T).
 
 cekInfo :-
+    nl,
     kartuTop(Warna, Jenis),
-    format('Kartu discard top: ~w - ~w~n', [Warna, Jenis]), nl, 
+    format('Kartu discard top: ~w-~w~n', [Warna, Jenis]),
+    nl,
+    modeGame(Mode),
+    (Mode == 2 ->
+    playerTeam(X),
+    retract(playerTeam(X)),
+    playerTeam(Y),
+    asserta(playerTeam(X)),
+    get_index(X,0,FirstPlayer1),
+    get_index(X,1,SecondPlayer1),
+    get_index(Y,0,FirstPlayer2),
+    get_index(Y,1,SecondPlayer2),
+    write('Tim 1 : '),
+    write(FirstPlayer1),
+    write(', '),
+    write(SecondPlayer1),
+    write('.'),
+    nl,
+    write('Tim 2 : '),
+    write(FirstPlayer2),
+    write(', '),
+    write(SecondPlayer2),
+    write('.'),
+    nl,
+    nl;
+    true),
     listUrutan(ListPemain),
     write('Urutan Pemain : '), 
-    print_Urutan(ListPemain), nl, 
+    print_Urutan(ListPemain),
+    nl, 
     nl,
     info_pemain(ListPemain, ListPemain),
     !.

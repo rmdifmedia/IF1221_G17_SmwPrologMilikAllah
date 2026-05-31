@@ -1,14 +1,21 @@
 /*Deklarasi Fakta*/
+
 :- dynamic(gameRun/1).     %gameRun(Status)
 :- dynamic(playerName/1).  %playerName(Player)
 :- dynamic(playerCount/1). %playerCount(Count)
-:- dynamic(listPlayer/1). %listPlayer(List)
-:- dynamic(listUrutan/1). %listUrutan(List)
-:- dynamic(listKartu/1). %listKartu(List)
+:- dynamic(listPlayer/1).  %listPlayer(List)
+:- dynamic(listUrutan/1).  %listUrutan(List)
+:- dynamic(listKartu/1).   %listKartu(List)
+:- dynamic(modeGame/1).    %modeGame(Mode)
+:- dynamic(playerTeam/1).  %playerTeam(List)
+:- dynamic(playerTeamNumber/2). %playerTeamNumber(Player,TeamNumber)
 
 /* Input jumlah pemain dengan batasan */
 startGame:-
     initdeck,
+    retractall(playerTeamNumber(_,_)),
+    retractall(playerTeam(_)),
+    retractall(modeGame(_)),
     retractall(arah(_)),
     retractall(turn(_)),
     retractall(kartuTop(_,_)),
@@ -20,8 +27,52 @@ startGame:-
     retractall(playerCount(_)),
     assertz(arah(kanan)),
     assertz(gameRun(true)),
-    inputPemain,
+    modeGame,
     !.
+
+modeGame:-
+    write('Tersedia 2 mode permainan.'),
+    nl,
+    write('1. Mode klasik'),
+    nl,
+    write('2. Mode turnamen'),
+    nl,
+    write('Pilih mode permainan: '),
+    read(Mode),
+    nl,
+    checkValidMode(Mode),
+    pilihMode(Mode),
+    (Mode == 2 ->
+    write('Permainan dimulai dalam mode turnamen.'),
+    assertz(playerCount(4)),
+    nl,
+    nl,
+    pemainCounter(4,0);
+    write('Permainan dimulai dalam mode klasik.'),
+    nl,
+    nl,
+    inputPemain),
+    !.
+
+checkValidMode(Mode):-
+    (\+integer(Mode) ->
+    write('Mohon masukkan angka 1 atau 2.'),
+    nl,
+    modeGame;
+    !).
+
+pilihMode(Mode):-
+    Mode >= 1,
+    Mode =< 2,
+    assertz(modeGame(Mode)).
+
+pilihMode(Mode):-
+    (Mode < 1;
+    Mode > 2),
+    write('Mohon masukkan angka 1 atau 2.'),
+    nl,
+    nl,
+    modeGame.
 
 inputPemain:-
     write('Masukkan jumlah pemain: '),
@@ -30,17 +81,16 @@ inputPemain:-
     hitungPemain(JumlahPemain).
 
 checkValidInput(JumlahPemain):-
-    \+integer(JumlahPemain) ->(
+    (\+integer(JumlahPemain) ->
     write('Mohon masukkan angka antara 2-4.'),
     nl,
-    inputPemain);
-    !.
+    inputPemain;
+    !).
 
 hitungPemain(JumlahPemain):-
     JumlahPemain >= 2,
     JumlahPemain =< 4,
     assertz(playerCount(JumlahPemain)),
-    nl,
     nl,
     pemainCounter(JumlahPemain, 0).
 
@@ -55,11 +105,17 @@ hitungPemain(JumlahPemain):-
 
 pemainCounter(Number,Number):-
     nl,
-    write('Urutan pemain: '),
     playerCount(Jumlah),
     findAllPemain(Jumlah,0,[]),
     listPlayer(List),
-    randomUrutan(Number, 1, List, []).
+    modeGame(Mode),
+    (Mode == 2 ->
+    write('Membentuk tim secara acak...'),
+    nl,
+    nl,
+    randomTim(0,2,List,[]);
+    write('Urutan pemain: '),
+    randomUrutan(Number, 1, List, [])).
 
 pemainCounter(Number, N):-
     N < Number,
@@ -68,21 +124,23 @@ pemainCounter(Number, N):-
     pemainCounter(Number, N1).
 
 /* Input data pemain yang valid */
-inputDataPemain(Nama):- open('dataNama.txt', append, N),
-                        writeq(N,Nama),
-                        write(N, '.'),
-                        nl(N),
-                        close(N).
+inputDataPemain(Nama):-
+    open('dataNama.txt', append, N),
+    writeq(N,Nama),
+    write(N, '.'),
+    nl(N),
+    close(N).
 
-findNama(Nama,_,0):-
-    retract(playerName(Nama)),
+findNama(Nama,_,0,Checker):-
+    Checker = 0,
     !.
 
-findNama(Nama,[NamaAwal|Tail],N):-
+findNama(Nama,[NamaAwal|Tail],N,Checker):-
     N1 is N - 1,
     (Nama == NamaAwal ->
+    Checker = 1,
     !;
-    findNama(Nama,Tail,N1)).
+    findNama(Nama,Tail,N1,Checker)).
 
 findAllPemain(Jumlah,Jumlah,_):-
     !.
@@ -104,17 +162,17 @@ formatInvalid(N):-
     cekFormatNama(NamaLain,N).
 
 cekFormatNama(Nama,N):-
-    \+integer(Nama) ->
-    (findAllPemain(N,0,[]),
+    (\+integer(Nama) ->
+    findAllPemain(N,0,[]),
     listPlayer(List),
     list_length(List,Len),
-    findNama(Nama,List,Len) ->
-    (write('Nama sudah digunakan. Masukkan nama lain : '),
+    findNama(Nama,List,Len,Checker),
+    ( Checker == 0 ->
+    assertz(playerName(Nama));
+    write('Nama sudah digunakan. Masukkan nama lain : '),
     read(NamaLain),
     cekFormatNama(NamaLain,N));
-    assertz(playerName(Nama)),
-    !);
-    formatInvalid(N).
+    formatInvalid(N)).
 
 /* Prompt meminta nama pemain */
 namaPemain(N):-
@@ -123,7 +181,11 @@ namaPemain(N):-
     write(' : '),
     read(Nama),
     N1 is N - 1,
-    cekFormatNama(Nama,N1).
+    (N == 1 ->
+    (\+integer(Nama)->
+     assertz(playerName(Nama));
+     formatInvalid(N));
+    cekFormatNama(Nama,N1)).
 
 /* Urutan Random Pemain */
 
@@ -131,6 +193,33 @@ randomMember(List,Player,Idx):-
     list_length(List,Len),
     random(0,Len,Idx),
     get_index(List,Idx,Player).
+
+randomTim(TeamCount,TeamCount,_,_):-
+    nl,
+    listPlayer(List),
+    playerCount(Number),
+    randomUrutan(Number, 1, List, []).
+
+randomTim(TeamNumber,TeamCount,List,ListTeam):-
+    TeamNum is TeamNumber + 1,
+    randomMember(List,Player1,Idx),
+    delete_element(List,Idx,NewList),
+    randomMember(NewList,Player2,Idxx),
+    delete_element(NewList,Idxx,NewList2),
+    append_element(ListTeam,Player1,FirstList),
+    append_element(FirstList,Player2,FinalList),
+    assertz(playerTeam(FinalList)),
+    assertz(playerTeamNumber(Player1,TeamNum)),
+    assertz(playerTeamNumber(Player2,TeamNum)),
+    format('Tim ~d : ', [TeamNum]),
+    get_index(FinalList,0,FirstPlayer),
+    get_index(FinalList,1,SecondPlayer),
+    write(FirstPlayer),
+    write(', '),
+    write(SecondPlayer),
+    write('.'),
+    nl,
+    randomTim(TeamNum,TeamCount,NewList2,[]).
 
 randomUrutan(Number, Number, List, ListUrutan):-
     randomMember(List,Player,Idx),
