@@ -2,6 +2,7 @@
 :- include('fact.pl').
 :- include('startGame.pl').
 :- include('helper.pl').
+:- dynamic(listHistoryTop/1).
 
 inputNamaFile(NamaFileTxt) :-
     write('Masukkan nama file permainan: '),
@@ -13,6 +14,14 @@ inputNamaFile(NamaFileTxt) :-
 insert_tail([], Tail, Tail).
 insert_tail([H|T], Tail, [H|Result]) :-
     insert_tail(T, Tail, Result).
+
+cekListHitory(_, [], hitam, wild):-!.
+cekListHitory(N, [W-J|Tail], W, J):-
+    isKartuAksi(W, J), !,
+    format('Kartu aksi yang terakhir dimainkan: ~w-~w (~w giliran lalu)', [W, J, N]), nl.
+cekListHitory(N, [W-J|Tail], HistoryW, HistoryJ):-
+    N1 is N + 1,
+    cekListHitory(N1, Tail, HistoryW, HistoryJ).
 
 saveGame :-
     inputNamaFile(NamaFileTxt),
@@ -38,6 +47,10 @@ saveGame :-
 
     listUrutan(Players),
     saveKartuTangan(Players, Stream),
+
+    listHistoryTop(History),
+    cekListHitory(1, History, HW, HJ),
+    format(Stream, 'Kartu_Aksi_Terakhir: ~w-~w.~n', [HW, HJ]),
 
     close(Stream),
     format('Status permainan berhasil disimpan ke ~w.~n', [NamaFileTxt]).
@@ -70,4 +83,5 @@ restore_term(discard_top:W-J)        :- assertz(kartuTop(W, J)).
 restore_term(warna_aktif:Warna)      :- assertz(currColor(Warna)).
 restore_term(arah_permainan:Arah)    :- assertz(arah(Arah)).
 restore_term(status_UNI:UNI)         :- assertz(listUni(UNI)).
+restore_term(Kartu_Aksi_Terakhir:HW-HJ):- assertz(listHistoryTop(HW-HJ)).
 restore_term(kartu(Player):Kartu)    :- assertz(kartu_diTangan(Player, Kartu)).

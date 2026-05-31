@@ -143,8 +143,6 @@ pilihwarnaLoop(WarnaBaru):-
         pilihwarnaLoop(WarnaBaru)
     ). 
 
-assertz(listHistoryTop([])).
-
 /* efek kartu*/ 
 efekKartu(hitam, mimic):-
     write('Menulusuri riwayat permainan...'), nl,
