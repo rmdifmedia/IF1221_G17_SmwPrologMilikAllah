@@ -209,7 +209,6 @@ efekKartu(hitam, wild_draw_four) :-
     ).
 
 opsiDrawFour(1) :- 
-    nextTurn,
     repeat_N_ambilKartu(2, AmbilKartu),
     nextTurn.
 
