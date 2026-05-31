@@ -61,6 +61,8 @@ reverseUrutan :-
         assertz(arah(kanan)) 
     ).
 
+/*lihatCommand*/
+
 aksiUtama(Pemain, AksUtamaList) :-
     turn(Pemain),
     kartuTop(_, drawfour),
@@ -106,7 +108,7 @@ lihatCommand :-
         write('Aksi pendukung yang tersedia:'), nl,
         printNomor(1, [lihatCommand, lihatKartu, cekInfo]).
 
-
+/*lihatKartu*/
 printKartu(_, []):-
     !.
 printKartu(N, [Kartu | T] ) :-
@@ -115,25 +117,34 @@ printKartu(N, [Kartu | T] ) :-
     printKartu(N1, T).
 
 lihatKartu :-
-  turn(Pemain), 
+    turn(Pemain),
+    nl,
+    write('Berikut kartu yang anda miliki.'), nl,
+    (   kartu_diTangan(Pemain, ListKartu)
+    ->  printKartu(1, ListKartu)
+    ;   write('Kamu tidak memiliki kartu!'), nl
+    ),
+    listSembunyi(ListSembunyi),
+    (   cekSembunyi(Pemain, ListSembunyi, KartuSembunyi)
+    ->  kartu_diTangan(Pemain, ListKartuSaatIni),
+        list_length(ListKartuSaatIni, Len),
+        NomorSembunyi is Len + 1,
+        format('~w. ~w (disembunyikan)~n', [NomorSembunyi, KartuSembunyi])
+    ;   true
+    ),
+    modeGame(Mode),
+    (Mode == 2 ->
         nl,
-        write('Berikut kartu yang anda miliki.'), nl,
-        (   kartu_diTangan(Pemain, ListKartu)
-        ->  printKartu(1, ListKartu)
-        ; write('Kamu tidak memiliki kartu!'), nl
-        ),
-        modeGame(Mode),
-        (Mode == 2 ->
-        nl,
-        playerTeamNumber(Pemain,X),
-        retract(playerTeamNumber(Pemain,X)),
-        playerTeamNumber(Teammate,X),
-        assertz(playerTeamNumber(Pemain,X)),
-        format('Berikut kartu yang teman satu tim anda miliki (~w).~n',[Teammate]),
+        playerTeamNumber(Pemain, X),
+        retract(playerTeamNumber(Pemain, X)),
+        playerTeamNumber(Teammate, X),
+        assertz(playerTeamNumber(Pemain, X)),
+        format('Berikut kartu yang teman satu tim anda miliki (~w).~n', [Teammate]),
         kartu_diTangan(Teammate, ListKartuTeman),
-        printKartu(1, ListKartuTeman);
-        true),
-        !.
+        printKartu(1, ListKartuTeman)
+    ;   true
+    ),
+    !.
 
 
 
