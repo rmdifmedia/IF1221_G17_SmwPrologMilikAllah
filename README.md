@@ -79,7 +79,7 @@
 |   ├── Laporan_G17.pdf        #Laporan keseluruhan tugas
 ├── src/
 |   ├── endgame.pl             # code untuk fitur endgame
-|   ├── cards.pl               # code untuk fitur yang berhubungan dengan kartu
+|   ├── fact.pl               # code untuk fitur yang berhubungan dengan kartu
 |   ├── helper.pl              # code untuk fungsi fungsi helper yang dibutuhkan 
 |   ├── main.pl                # maincode untuk memulai permainan
 |   ├── player.pl              # code untuk fitur yang berhubungan dengan pemain
