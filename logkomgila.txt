@@ -1,0 +1,9 @@
+mode_game:1.
+urutan_pemain: [sisi,raya].
+giliran: sisi.
+discard_top: hijau-3.
+warna_aktif: hijau.
+arah_permainan: kanan.
+status_UNI: [].
+kartu(sisi):[biru-2,kuning-draw_two,merah-draw_two,merah-2,hijau-reverse,hijau-reverse].
+kartu(raya):[biru-draw_two,kuning-8,hijau-2,biru-6,merah-1,merah-2,hijau-3].

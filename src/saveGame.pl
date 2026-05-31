@@ -18,6 +18,9 @@ saveGame :-
     inputNamaFile(NamaFileTxt),
     open(NamaFileTxt, write, Stream),
 
+    modeGame(Mode),
+    format(Stream, 'mode_game:~w.~n', [Mode]),
+
     listUrutan(Urutan),
     format(Stream, 'urutan_pemain: ~w.~n', [Urutan]),
 
@@ -36,11 +39,21 @@ saveGame :-
     listUni(UNI),
     format(Stream, 'status_UNI: ~w.~n', [UNI]),
 
-    listUrutan(Players),
-    saveKartuTangan(Players, Stream),
+    ( Mode == 2
+    -> savePlayerTeam(Urutan, Stream)
+    ;  true
+    ),
+
+    saveKartuTangan(Urutan, Stream),
 
     close(Stream),
     format('Status permainan berhasil disimpan ke ~w.~n', [NamaFileTxt]).
+
+savePlayerTeam([], _).
+savePlayerTeam([Player|Rest], Stream) :-
+    playerTeamNumber(Player, TeamNum),
+    format(Stream, 'player_team:~w-~w.~n', [Player, TeamNum]),
+    savePlayerTeam(Rest, Stream).
 
 saveKartuTangan([], _).
 saveKartuTangan([Player|Rest], Stream) :-
@@ -54,8 +67,8 @@ loadGame :-
     loadFakta(Stream),
     close(Stream),
     turn(Giliran),
-    write('Status permainan berhasil diambil dari ~w.~n', [NamaFileTxt]),
-    write('Melanjutkan giliran ~w...', [Giliran]).
+    format('Status permainan berhasil diambil dari ~w.~n', [NamaFileTxt]),
+    format('Melanjutkan giliran ~w...', [Giliran]).
 
 loadFakta(NamaFile) :-
     read_term(NamaFile, Term, []),
@@ -64,10 +77,12 @@ loadFakta(NamaFile) :-
     loadFakta(NamaFile)
     ).
 
-restore_term(urutan_pemain:Urutan)   :- assertz(listUrutan(Urutan)).
-restore_term(giliran:Giliran)        :- assertz(turn(Giliran)).
-restore_term(discard_top:W-J)        :- assertz(kartuTop(W, J)).
-restore_term(warna_aktif:Warna)      :- assertz(currColor(Warna)).
-restore_term(arah_permainan:Arah)    :- assertz(arah(Arah)).
-restore_term(status_UNI:UNI)         :- assertz(listUni(UNI)).
-restore_term(kartu(Player):Kartu)    :- assertz(kartu_diTangan(Player, Kartu)).
+restore_term(mode_game:Mode)             :- assertz(modeGame(Mode)).
+restore_term(urutan_pemain:Urutan)       :- assertz(listUrutan(Urutan)).
+restore_term(giliran:Giliran)            :- assertz(turn(Giliran)).
+restore_term(discard_top:W-J)            :- assertz(kartuTop(W, J)).
+restore_term(warna_aktif:Warna)          :- assertz(currColor(Warna)).
+restore_term(arah_permainan:Arah)        :- assertz(arah(Arah)).
+restore_term(status_UNI:UNI)             :- assertz(listUni(UNI)).
+restore_term(player_team:Player-TeamNum) :- assertz(playerTeamNumber(Player, TeamNum)).
+restore_term(kartu(Player):Kartu)        :- assertz(kartu_diTangan(Player, Kartu)).
