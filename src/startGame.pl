@@ -299,7 +299,6 @@ firstTurn:-
     listUrutan(Urutan),
     get_index(Urutan,0,FirstPlayer),
     format('Giliran ~w.',[FirstPlayer]),
-    read(MM),
     assertz(turn(FirstPlayer)),
     listPlayer(List),
     list_length(List,LenList),
