@@ -6,6 +6,9 @@
 :- dynamic(listUrutan/1). %ListUrutan(List).
 :- dynamic(arah/1).
 
+/*SwapKartu*/
+:- dynamic(sudahSwap/1).
+
 /* UNI */
 :- dynamic(listUni/1).
 :- dynamic(kartu_diTangan/2).
@@ -365,4 +368,102 @@ godsHand:-
     format('Giliran ~w.~n',[Player_DEST]),
     retractall(turn(_)),
     assertz(turn(Player_DEST)),
+    !.
+
+/*Swap Kartu*/
+getTeammate(Pemain, Teammate) :-
+    playerTeamNumber(Pemain, X),
+    playerTeamNumber(Teammate, X),
+    Teammate \= Pemain.
+
+aksi_utama_tersedia(Pemain, swapKartu) :-
+    turn(Pemain),
+    modeGame(2),
+    \+ sudahSwap(Pemain),
+    getTeammate(Pemain, Teammate),
+    kartu_diTangan(Pemain, ListKartuPemain),
+    kartu_diTangan(Teammate, ListKartuTeman),
+    list_length(ListKartuPemain, LenPemain),
+    list_length(ListKartuTeman, LenTeman),
+    LenPemain > 1,
+    LenTeman > 1.
+
+resetSwapFlag :-
+    turn(Pemain),
+    retractall(sudahSwap(Pemain)).
+
+swapKartu(_, _) :-
+    \+ modeGame(2),
+    !,
+    write('swapKartu hanya tersedia pada mode turnamen.'), nl.
+
+swapKartu(_, _) :-
+    turn(Pemain),
+    sudahSwap(Pemain),
+    !,
+    write('Anda sudah menggunakan swapKartu pada giliran ini.'), nl.
+
+swapKartu(_, _) :-
+    turn(Pemain),
+    getTeammate(Pemain, Teammate),
+    kartu_diTangan(Pemain, ListKartuPemain),
+    kartu_diTangan(Teammate, ListKartuTeman),
+    list_length(ListKartuPemain, LenPemain),
+    list_length(ListKartuTeman, LenTeman),
+    (LenPemain =:= 1 ; LenTeman =:= 1),
+    !,
+    write('swapKartu tidak dapat dilakukan jika salah satu pemain hanya memiliki satu kartu.'), nl.
+
+swapKartu(NomorPemain, _) :-
+    turn(Pemain),
+    kartu_diTangan(Pemain, ListKartuPemain),
+    list_length(ListKartuPemain, LenPemain),
+    (NomorPemain < 1 ; NomorPemain > LenPemain),
+    !,
+    format('Nomor urut kartu Anda (~w) tidak valid. Masukkan antara 1 hingga ~w: ', 
+           [NomorPemain, LenPemain]),
+    read(NomorBaru),
+    swapKartu(NomorBaru, _). /* akan re-read NomorTeman di luar, tapi lihat catatan */
+
+swapKartu(NomorPemain, NomorTeman) :-
+    turn(Pemain),
+    getTeammate(Pemain, Teammate),
+    kartu_diTangan(Teammate, ListKartuTeman),
+    list_length(ListKartuTeman, LenTeman),
+    (NomorTeman < 1 ; NomorTeman > LenTeman),
+    !,
+    format('Nomor urut kartu teman (~w) tidak valid. Masukkan antara 1 hingga ~w: ',
+           [NomorTeman, LenTeman]),
+    read(NomorTemanBaru),
+    swapKartu(NomorPemain, NomorTemanBaru).
+
+swapKartu(NomorPemain, NomorTeman) :-
+    turn(Pemain),
+    getTeammate(Pemain, Teammate),
+    kartu_diTangan(Pemain, ListKartuPemain),
+    kartu_diTangan(Teammate, ListKartuTeman),
+    list_length(ListKartuPemain, LenPemain),
+    list_length(ListKartuTeman, LenTeman),
+    NomorPemain >= 1, NomorPemain =< LenPemain,
+    NomorTeman  >= 1, NomorTeman  =< LenTeman,
+
+    IdxPemain is NomorPemain - 1,
+    IdxTeman  is NomorTeman  - 1,
+    get_index(ListKartuPemain, IdxPemain, KartuPemain),
+    get_index(ListKartuTeman,  IdxTeman,  KartuTeman),
+
+    delete_element(ListKartuPemain, IdxPemain, ListKartuPemainSementara),
+    delete_element(ListKartuTeman,  IdxTeman,  ListKartuTemanSementara),
+
+    append_element(ListKartuPemainSementara, KartuTeman,  ListKartuPemainBaru),
+    append_element(ListKartuTemanSementara,  KartuPemain, ListKartuTemanBaru),
+
+    retract(kartu_diTangan(Pemain,   _)),
+    assertz(kartu_diTangan(Pemain,   ListKartuPemainBaru)),
+    retract(kartu_diTangan(Teammate, _)),
+    assertz(kartu_diTangan(Teammate, ListKartuTemanBaru)),
+
+    assertz(sudahSwap(Pemain)),
+    format('~w menukar kartu ~w dengan kartu ~w milik ~w.~n',
+           [Pemain, KartuPemain, KartuTeman, Teammate]),
     !.
