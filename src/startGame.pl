@@ -9,9 +9,13 @@
 :- dynamic(modeGame/1).    %modeGame(Mode)
 :- dynamic(playerTeam/1).  %playerTeam(List)
 :- dynamic(playerTeamNumber/2). %playerTeamNumber(Player,TeamNumber)
+:- dynamic(listPlayer/1). %listPlayer(List)
+:- dynamic(listUrutan/1). %listUrutan(List)
+:- dynamic(listKartu/1). %listKartu(List)
+:- dynamic(listHistoryTop/1).
 
 /* Input jumlah pemain dengan batasan */
-startGame:-
+newGame:-
     initdeck,
     retractall(playerTeamNumber(_,_)),
     retractall(playerTeam(_)),
@@ -25,8 +29,10 @@ startGame:-
     retractall(listPlayer(_)),
     retractall(playerName(_)),
     retractall(playerCount(_)),
+    retractall(listHistoryTop(_)),
     assertz(arah(kanan)),
     assertz(gameRun(true)),
+    assertz(listHistoryTop([])),
     modeGame,
     !.
 
@@ -250,7 +256,7 @@ ambilKartuAwal(0,NewList,_):-
     !.
 
 ambilKartuAwal(N,List,Deck):-
-    random(0,54,Index),
+    random(0,55,Index),
     get_index(Deck,Index,Kartu),
     append_element(List,Kartu,NewList),
     N1 is N - 1,
@@ -285,7 +291,7 @@ bagiDeck:-
     discardFirst(Deck).
 
 discardFirst(Deck):-
-    random(0,54,Index),
+    random(0,55,Index),
     get_index(Deck,Index,Kartu),
     get_index(Deck,Index,W-J),
     setDiscardTop(W,J),
