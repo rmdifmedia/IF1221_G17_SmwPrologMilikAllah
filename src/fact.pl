@@ -302,16 +302,19 @@ tantang :-
     listTantang([PrevPemain|_]),
     kartu_diTangan(PrevPemain, ListKartu),
     (member(WarnaAktif-_, ListKartu)
-    -> write('Tantangan Berhasil'), nl,
-    format('~w Mendapatkan 4 Kartu Acak...~n', [PrevPemain]),
-    nextTurn, repeat_N_ambilKartu(4, _), nextTurn,
-        ( Jumlah =:= 2 -> nextTurn ;  true)
-    ;
-    write('Tantangan Gagal'), nl,
-    format('~w Mendapatkan 6 Kartu Acak...~n', [Pemain]),
-    repeat_N_ambilKartu(6, _), nextTurn
-    ), 
-    retractall(listTantang(_)),  
+    ->  write('Tantangan Berhasil'), nl,
+        format('~w Mendapatkan 4 Kartu Acak...~n', [PrevPemain]),
+        retractall(turn(_)),
+        assertz(turn(PrevPemain)),
+        repeat_N_ambilKartu(4, _),
+        retractall(turn(_)),
+        assertz(turn(Pemain))
+    ;   write('Tantangan Gagal'), nl,
+        format('~w Mendapatkan 6 Kartu Acak...~n', [Pemain]),
+        repeat_N_ambilKartu(6, _),
+        nextTurn
+    ),
+    retractall(listTantang(_)),
     assertz(listTantang([])).
 
 mainkanKartu(Number):-
